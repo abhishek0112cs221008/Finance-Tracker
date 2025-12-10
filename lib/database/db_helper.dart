@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:sqflite/sqflite.dart';
+import 'package:sqflite/sqflite.dart' hide Transaction;
 import 'package:path/path.dart';
 import 'package:synchronized/synchronized.dart';
 import '../models/transaction.dart';

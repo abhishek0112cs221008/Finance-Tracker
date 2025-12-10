@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../providers/transaction_provider.dart';
 import '../models/group.dart';
 import '../models/transaction.dart';
+import '../l10n/app_localizations.dart';
 
 class AddGroupTransactionScreen extends StatefulWidget {
   final Group group;
@@ -131,7 +132,7 @@ class _AddGroupTransactionScreenState extends State<AddGroupTransactionScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Add Expense'),
+        title: Text(AppLocalizations.of(context)!.addExpense),
         actions: [
           TextButton(
             onPressed: _isSaving ? null : _saveTransaction,
@@ -141,7 +142,7 @@ class _AddGroupTransactionScreenState extends State<AddGroupTransactionScreen> {
                     height: 20,
                     child: CircularProgressIndicator(strokeWidth: 2),
                   )
-                : const Text('Save'),
+                : Text(AppLocalizations.of(context)!.save),
           ),
         ],
       ),
@@ -170,7 +171,7 @@ class _AddGroupTransactionScreenState extends State<AddGroupTransactionScreen> {
         padding: const EdgeInsets.all(20),
         child: Column(
           children: [
-            const Text('Enter Amount'),
+            Text(AppLocalizations.of(context)!.enterAmount),
             const SizedBox(height: 8),
             TextField(
               controller: _amountController,
@@ -235,71 +236,63 @@ class _AddGroupTransactionScreenState extends State<AddGroupTransactionScreen> {
                       Text(cat['name']),
                     ],
                   ),
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: isSelected 
-                            ? CupertinoColors.activeBlue.withOpacity(0.1)
-                            : CupertinoColors.systemGrey6,
-                        borderRadius: BorderRadius.circular(12),
-                        border: isSelected
-                            ? Border.all(color: CupertinoColors.activeBlue, width: 2)
-                            : null,
-                      ),
-                      child: Row(
-                        children: [
-                          Container(
-                            width: 40,
-                            height: 40,
-                            decoration: BoxDecoration(
-                              color: isSelected 
-                                  ? CupertinoColors.activeBlue.withOpacity(0.2)
-                                  : CupertinoColors.systemGrey4,
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                            child: Center(
-                              child: Text(
-                                member.isNotEmpty ? member[0].toUpperCase() : '?',
-                                style: TextStyle(
-                                  color: isSelected 
-                                      ? CupertinoColors.activeBlue
-                                      : CupertinoColors.systemGrey,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 16,
-                                ),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 16),
-                          Expanded(
-                            child: Text(
-                              member,
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: isSelected 
-                                    ? FontWeight.w600 
-                                    : FontWeight.w500,
-                                color: isSelected 
-                                    ? CupertinoColors.activeBlue
-                                    : CupertinoColors.label,
-                              ),
-                            ),
-                          ),
-                          if (isSelected)
-                            const Icon(
-                              CupertinoIcons.checkmark_circle_fill,
-                              color: CupertinoColors.activeBlue,
-                              size: 20,
-                            ),
-                        ],
-                      ),
-                    ),
-                  );
-                },
-              ),
+                );
+              }).toList(),
+              onChanged: (value) {
+                if (value != null) {
+                  setState(() => _selectedCategory = value);
+                }
+              },
             ),
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildSplitSection() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          AppLocalizations.of(context)!.splitWith,
+          style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: Theme.of(context).colorScheme.primary,
+              ),
+        ),
+        const SizedBox(height: 12),
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          children: widget.group.members.map((member) {
+            final isSelected = _splitMembers[member] ?? false;
+            return FilterChip(
+              label: Text(member),
+              selected: isSelected,
+              onSelected: (selected) {
+                setState(() {
+                  _splitMembers[member] = selected;
+                });
+              },
+              avatar: CircleAvatar(
+                backgroundColor: isSelected
+                    ? Theme.of(context).colorScheme.secondaryContainer
+                    : Theme.of(context).colorScheme.surfaceContainerHighest,
+                child: Text(
+                  member.isNotEmpty ? member[0].toUpperCase() : '?',
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: isSelected
+                        ? Theme.of(context).colorScheme.onSecondaryContainer
+                        : Theme.of(context).colorScheme.onSurfaceVariant,
+                  ),
+                ),
+              ),
+            );
+          }).toList(),
+        ),
+      ],
     );
   }
 }

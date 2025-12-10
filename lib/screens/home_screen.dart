@@ -31,50 +31,26 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final isDarkTheme = Theme.of(context).brightness == Brightness.dark;
-    
-    // M3 Navigation destinations
-    final destinations = const [
-      NavigationDestination(
-        icon: Icon(Icons.home_outlined),
-        selectedIcon: Icon(Icons.home_rounded),
-        label: 'Home',
-      ),
-      NavigationDestination(
-        icon: Icon(Icons.pie_chart_outline),
-        selectedIcon: Icon(Icons.pie_chart_rounded),
-        label: 'Stats',
-      ),
-      NavigationDestination(
-        icon: Icon(Icons.people_outline),
-        selectedIcon: Icon(Icons.people_rounded),
-        label: 'Groups',
-      ),
-      NavigationDestination(
-        icon: Icon(Icons.account_balance_wallet_outlined),
-        selectedIcon: Icon(Icons.account_balance_wallet_rounded),
-        label: 'Wallet',
-      ),
-      NavigationDestination(
-        icon: Icon(Icons.settings_outlined),
-        selectedIcon: Icon(Icons.settings_rounded),
-        label: 'Settings',
-      ),
-    ];
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final colorScheme = Theme.of(context).colorScheme;
 
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: SystemUiOverlayStyle(
         statusBarColor: Colors.transparent,
-        statusBarIconBrightness:
-            isDarkTheme ? Brightness.light : Brightness.dark,
-        systemNavigationBarColor: Theme.of(context).colorScheme.surface,
-        systemNavigationBarIconBrightness:
-            isDarkTheme ? Brightness.light : Brightness.dark,
+        statusBarIconBrightness: isDark ? Brightness.light : Brightness.dark,
+        systemNavigationBarColor: colorScheme.surface,
+        systemNavigationBarIconBrightness: isDark ? Brightness.light : Brightness.dark,
       ),
       child: Scaffold(
         body: IndexedStack(
           index: _selectedIndex,
-          children: _screens,
+          children: [
+            const TransactionsScreen(),
+            const StatisticsScreen(), // Restored Stats
+            const GroupsScreen(),
+            const WalletPage(),
+            // Settings moved to Home Screen Header
+          ],
         ),
         floatingActionButton: FloatingActionButton(
           onPressed: () {
@@ -83,12 +59,77 @@ class _HomeScreenState extends State<HomeScreen> {
                 MaterialPageRoute(builder: (context) => AddTransactionScreen()),
               );
           },
-          child: const Icon(Icons.add),
+          backgroundColor: colorScheme.primary,
+          elevation: 4,
+          shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(16))),
+          child: const Icon(Icons.add_rounded, size: 28, color: Colors.white),
         ),
-        bottomNavigationBar: NavigationBar(
-          selectedIndex: _selectedIndex,
-          onDestinationSelected: _onTabSelected,
-          destinations: destinations,
+        floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+        bottomNavigationBar: Container(
+          decoration: BoxDecoration(
+            color: colorScheme.surface,
+            boxShadow: [
+              BoxShadow(
+                color: colorScheme.shadow.withOpacity(0.1),
+                blurRadius: 10,
+                offset: const Offset(0, -5),
+              ),
+            ],
+          ),
+          child: SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                   _buildTabItem(0, Icons.home_rounded, 'Home'),
+                   _buildTabItem(1, Icons.pie_chart_rounded, 'Stats'),
+                   _buildTabItem(2, Icons.group_work_rounded, 'Groups'),
+                   _buildTabItem(3, Icons.account_balance_wallet_rounded, 'Wallet'),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTabItem(int index, IconData icon, String label) {
+    final isSelected = _selectedIndex == index;
+    final colorScheme = Theme.of(context).colorScheme;
+    
+    return InkWell(
+      onTap: () => _onTabSelected(index),
+      borderRadius: BorderRadius.circular(12),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+        padding: EdgeInsets.symmetric(horizontal: isSelected ? 16 : 12, vertical: 10),
+        decoration: BoxDecoration(
+          color: isSelected ? colorScheme.primary.withOpacity(0.1) : Colors.transparent,
+          borderRadius: BorderRadius.circular(50),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+             Icon(
+               icon,
+               color: isSelected ? colorScheme.primary : colorScheme.onSurfaceVariant,
+               size: 24,
+             ),
+             if (isSelected) ...[
+               const SizedBox(width: 8),
+               Text(
+                 label,
+                 style: TextStyle(
+                   color: colorScheme.primary,
+                   fontSize: 14,
+                   fontWeight: FontWeight.w600,
+                 ),
+               ),
+             ],
+          ],
         ),
       ),
     );

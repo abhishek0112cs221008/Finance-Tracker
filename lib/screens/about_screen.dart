@@ -1,157 +1,230 @@
 import 'package:flutter/material.dart';
 
-class AboutScreen extends StatefulWidget {
+class AboutScreen extends StatelessWidget {
   const AboutScreen({super.key});
 
   @override
-  _AboutScreenState createState() => _AboutScreenState();
-}
-
-class _AboutScreenState extends State<AboutScreen> with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
-  late Animation<double> _fadeAnimation;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = AnimationController(
-      duration: const Duration(seconds: 2),
-      vsync: this,
-    );
-    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
-    );
-    _controller.forward();
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    
     return Scaffold(
-      extendBodyBehindAppBar: true, // Extends UI behind AppBar
       appBar: AppBar(
-        title: const Text('About Finance Tracker'),
-        backgroundColor: Colors.transparent, // Transparent AppBar for premium look
-        foregroundColor: Colors.black, // Black text color
-        elevation: 0, // No shadow for sleek look
-        toolbarHeight: 100, // Taller AppBar for better design
+        title: const Text('About'),
+        elevation: 0,
       ),
-      body: Stack(
+      body: ListView(
+        padding: const EdgeInsets.all(16),
         children: [
-          // 🔹 Background with pure white color and soft gradient effect
-          Container(
-            decoration: const BoxDecoration(
-              color: Colors.white, // Premium white color background
-            ),
-          ),
-
-          // 🔹 Content with padding
-          Padding(
-            padding: const EdgeInsets.all(24.0),
+          // App Icon & Name
+          Center(
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                const SizedBox(height: 120), // Space for AppBar
-
-                // 🔹 App Info Card with sleek design
-                Card(
-                  elevation: 5,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-                  color: Colors.white,
-                  shadowColor: Colors.black.withOpacity(0.1),
-                  child: Padding(
-                    padding: const EdgeInsets.all(24.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // Title of the Card with Premium typography
-                        Text(
-                          'Track Your Finance',
-                          style: TextStyle(
-                            fontSize: 30,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black,
-                            letterSpacing: 1.5,
-                          ),
-                        ),
-                        const SizedBox(height: 16),
-                        // Version info with a soft, modern font
-                        Text(
-                          'Version: 1.0.0',
-                          style: TextStyle(
-                            fontSize: 18,
-                            color: Colors.black.withOpacity(0.7),
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        const SizedBox(height: 16),
-                        // Description text with refined, readable style
-                        Text(
-                          'This app helps you track your financial activities and manage your budget effectively. '
-                          'You can add your income and expenses, categorize them, and get detailed reports to understand your financial status.',
-                          style: TextStyle(
-                            fontSize: 18,
-                            color: Colors.black.withOpacity(0.8),
-                          ),
-                        ),
-                        const SizedBox(height: 16),
-                        // Developer Info with italics and stylish color
-                        Text(
-                          'Developed by: Abhishek & Team',
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontStyle: FontStyle.italic,
-                            color: Colors.black.withOpacity(0.8),
-                          ),
-                        ),
-                      ],
+              children: [
+                Container(
+                  width: 100,
+                  height: 100,
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [colorScheme.primary, colorScheme.primary.withOpacity(0.7)],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
                     ),
+                    borderRadius: BorderRadius.circular(24),
+                    boxShadow: [
+                      BoxShadow(
+                        color: colorScheme.primary.withOpacity(0.3),
+                        blurRadius: 20,
+                        offset: const Offset(0, 10),
+                      ),
+                    ],
+                  ),
+                  child: const Icon(
+                    Icons.account_balance_wallet_rounded,
+                    size: 50,
+                    color: Colors.white,
                   ),
                 ),
-
-                const Spacer(), // Pushes animated text to the bottom
-
-                // 🔹 Animated "A B H I S H E K" at the bottom
-                Center(
-                  child: AnimatedBuilder(
-                    animation: _fadeAnimation,
-                    builder: (context, child) {
-                      return Opacity(
-                        opacity: _fadeAnimation.value * 0.5,
-                        child: Text(
-                          "A B H I S H E K".toLowerCase(),
-                          style: TextStyle(
-                            fontSize: 48,
-                            fontWeight: FontWeight.bold,
-                            letterSpacing: 3,
-                            color: Colors.black,
-                            fontFamily: 'Blueberry', // Use custom font
-                            shadows: [
-                              Shadow(
-                                color: Colors.grey.withOpacity(0.5),
-                                blurRadius: 20 * _fadeAnimation.value,
-                              ),
-                              Shadow(
-                                color: Colors.black.withOpacity(0.2),
-                                blurRadius: 25 * _fadeAnimation.value,
-                              ),
-                            ],
-                          ),
-                        ),
-                      );
-                    },
+                const SizedBox(height: 24),
+                const Text(
+                  'Finance Tracker Pro',
+                  style: TextStyle(
+                    fontSize: 28,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
-
-                const SizedBox(height: 40), // Extra spacing at the bottom
+                const SizedBox(height: 8),
+                Text(
+                  'Version 2.0.0',
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: colorScheme.onSurfaceVariant,
+                  ),
+                ),
               ],
             ),
           ),
+          
+          const SizedBox(height: 32),
+          
+          // Description
+          Card(
+            child: Padding(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Icon(Icons.info_outline, color: colorScheme.primary),
+                      const SizedBox(width: 12),
+                      const Text(
+                        'About This App',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    'Finance Tracker Pro helps you manage your daily expenses and income with ease. Track transactions, create groups for shared expenses, generate reports, and gain insights into your spending habits.',
+                    style: TextStyle(
+                      height: 1.6,
+                      color: colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          
+          const SizedBox(height: 16),
+          
+          // Features
+          Card(
+            child: Padding(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Icon(Icons.star_rounded, color: colorScheme.primary),
+                      const SizedBox(width: 12),
+                      const Text(
+                        'Key Features',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  _buildFeatureItem(context, Icons.add_circle_outline, 'Track income and expenses'),
+                  _buildFeatureItem(context, Icons.filter_list_rounded, 'Advanced filtering by date and category'),
+                  _buildFeatureItem(context, Icons.picture_as_pdf_rounded, 'Export to PDF reports'),
+                  _buildFeatureItem(context, Icons.group_rounded, 'Group expenses with friends'),
+                  _buildFeatureItem(context, Icons.pie_chart_rounded, 'Visual statistics and insights'),
+                  _buildFeatureItem(context, Icons.dark_mode_rounded, 'Dark mode support'),
+                ],
+              ),
+            ),
+          ),
+          
+          const SizedBox(height: 16),
+          
+          // Developer Info
+          Card(
+            child: Padding(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Icon(Icons.code_rounded, color: colorScheme.primary),
+                      const SizedBox(width: 12),
+                      const Text(
+                        'Developer',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    'Developed with ❤️ by Abhishek & Team',
+                    style: TextStyle(
+                      color: colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    '© 2024 Finance Tracker Pro. All rights reserved.',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          
+          const SizedBox(height: 24),
+          
+          // Links
+          _buildLinkButton(context, Icons.privacy_tip_rounded, 'Privacy Policy', colorScheme),
+          const SizedBox(height: 12),
+          _buildLinkButton(context, Icons.description_rounded, 'Terms of Service', colorScheme),
+          const SizedBox(height: 12),
+          _buildLinkButton(context, Icons.open_in_new_rounded, 'Visit Website', colorScheme),
+        ],
+      ),
+    );
+  }
+  
+  Widget _buildFeatureItem(BuildContext context, IconData icon, String text) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: Row(
+        children: [
+          Icon(icon, size: 20, color: Theme.of(context).colorScheme.primary),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Text(
+              text,
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+  
+  Widget _buildLinkButton(BuildContext context, IconData icon, String label, ColorScheme colorScheme) {
+    return OutlinedButton(
+      onPressed: () {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('$label - Coming Soon')),
+        );
+      },
+      style: OutlinedButton.styleFrom(
+        padding: const EdgeInsets.all(16),
+        side: BorderSide(color: colorScheme.outline.withOpacity(0.3)),
+      ),
+      child: Row(
+        children: [
+          Icon(icon, size: 20),
+          const SizedBox(width: 12),
+          Text(label),
+          const Spacer(),
+          Icon(Icons.arrow_forward_ios, size: 16, color: colorScheme.onSurfaceVariant),
         ],
       ),
     );

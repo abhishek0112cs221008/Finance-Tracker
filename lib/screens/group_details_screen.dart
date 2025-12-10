@@ -8,6 +8,7 @@ import '../providers/transaction_provider.dart';
 import '../models/group.dart';
 import '../models/transaction.dart'; // Use standard transaction model
 import 'add_group_transaction_screen.dart';
+import '../l10n/app_localizations.dart';
 
 class GroupDetailsScreen extends StatefulWidget {
   final Group group;
@@ -353,86 +354,234 @@ class _GroupDetailsScreenState extends State<GroupDetailsScreen>
   Widget _buildTransactionList() {
     final sortedTransactions = List<Transaction>.from(_groupTransactions)
       ..sort((a, b) => b.date.compareTo(a.date));
-                  ),
-                ),
-              );
-            }),
-            if (sortedTransactions.isNotEmpty) const SizedBox(height: 12),
-          ],
+
+    // Group transactions by date for that "Chat Day Header" feel
+    // (Optional, but simple list first)
+
+    // Let's re-do the grouping for `reverse: true` ListView.
+    // Input: sortedTransactions (Newest First).
+    // If reverse: true, index 0 is at bottom (Newest).
+    // So we iterate Newest -> Oldest.
+    // Date Header should appear AFTER the last message of that day (visually above).
+    // In `reverse: true` list, "Above" means "Next index".
+
+    return ListView.builder(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      itemCount: sortedTransactions.length,
+      reverse: true, // Chat style
+      itemBuilder: (context, index) {
+        final transaction = sortedTransactions[index];
+        final isLast = index == sortedTransactions.length - 1;
+        final isFirst = index == 0; // Visually bottom-most
+
+        // Logic for Date Header (Show if Next item (older) is different day)
+        // Since we are scrolling up (reverse), we look ahead to `index + 1`.
+        // If `index + 1` is different day or default (end of list), we show header for `current`.
+        
+        bool showHeader = false;
+        if (index == sortedTransactions.length - 1) {
+            showHeader = true; // Top most item (Oldest) always gets header
+        } else {
+            final nextTransaction = sortedTransactions[index + 1];
+            if (!_isSameDay(transaction.date, nextTransaction.date)) {
+                showHeader = true;
+            }
+        }
+
+        return Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+                if (showHeader) _buildDateHeader(transaction.date), // Visually Top
+                _buildTransactionBubble(transaction),
+            ],
+        );
+      },
+    );
+  }
+
+  bool _isSameDay(DateTime a, DateTime b) {
+      return a.year == b.year && a.month == b.month && a.day == b.day;
+  }
+
+  Widget _buildDateHeader(DateTime date) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 12),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.surfaceContainerHighest.withOpacity(0.6),
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Text(
+          DateFormat('MMMM d, y').format(date), // e.g. October 24, 2025
+          style: TextStyle(
+            fontSize: 12,
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
+            fontWeight: FontWeight.bold,
+          ),
         ),
       ),
     );
   }
 
-  Widget _buildEmptyState() {
-    return Padding(
-      padding: const EdgeInsets.all(32),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Container(
-            width: 120,
-            height: 120,
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  CupertinoColors.systemGrey5,
-                  CupertinoColors.systemGrey6,
-                ],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
+  Widget _buildTransactionBubble(Transaction transaction) {
+      final isMe = transaction.paidBy == 'You';
+      
+      // Premium Bubble Colors
+      final bubbleColor = isMe
+          ? Theme.of(context).colorScheme.primary.withOpacity(0.9) // Emerald
+          : Theme.of(context).colorScheme.surfaceContainerHighest.withOpacity(0.5); // Glassy
+
+      final textColor = isMe ? Colors.white : Theme.of(context).colorScheme.onSurface;
+      final subTextColor = isMe ? Colors.white.withOpacity(0.7) : Theme.of(context).colorScheme.onSurfaceVariant;
+
+      return Align(
+        alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
+        child: Container(
+          constraints: BoxConstraints(
+            maxWidth: MediaQuery.of(context).size.width * 0.75,
+          ),
+          margin: const EdgeInsets.symmetric(vertical: 4),
+          padding: const EdgeInsets.all(12), // More padding for premium feel
+          decoration: BoxDecoration(
+            color: bubbleColor,
+            borderRadius: BorderRadius.only(
+              topLeft: const Radius.circular(20),
+              topRight: const Radius.circular(20),
+              bottomLeft: isMe ? const Radius.circular(20) : Radius.zero,
+              bottomRight: isMe ? Radius.zero : const Radius.circular(20),
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.05),
+                offset: const Offset(0, 2),
+                blurRadius: 4,
               ),
-              borderRadius: BorderRadius.circular(60),
-            ),
-            child: const Icon(
-              CupertinoIcons.money_dollar_circle,
-              size: 60,
-              color: CupertinoColors.systemGrey,
-            ),
+            ],
           ),
-          const SizedBox(height: 32),
-          const Text(
-            "No expenses yet",
-            style: TextStyle(
-              fontSize: 28,
-              fontWeight: FontWeight.w700,
-              color: CupertinoColors.label,
-              letterSpacing: -0.5,
-            ),
-          ),
-          const SizedBox(height: 12),
-          const Text(
-            "Start splitting expenses with your group by adding your first transaction. Track who pays what and settle up easily.",
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 16,
-              color: CupertinoColors.secondaryLabel,
-              height: 1.5,
-              fontWeight: FontWeight.w400,
-            ),
-          ),
-          const SizedBox(height: 40),
-          CupertinoButton.filled(
-            onPressed: _navigateToAddGroupTransaction,
-            borderRadius: BorderRadius.circular(16),
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-            child: const Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(CupertinoIcons.add, size: 20),
-                SizedBox(width: 8),
-                Text(
-                  "Add First Expense",
+          child: Stack(
+            children: [
+               Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  if (!isMe)
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 4.0),
+                      child: Text(
+                        transaction.paidBy ?? 'Unknown',
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.primary,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 12,
+                        ),
+                      ),
+                    ),
+                  Padding(
+                    padding: const EdgeInsets.only(right: 60.0, bottom: 4.0),
+                     child: Text(
+                      transaction.name,
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: textColor,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                  Text(
+                    "₹${transaction.amount.toStringAsFixed(2)}",
+                    style: TextStyle(
+                      fontSize: 15, // Slightly larger
+                      fontWeight: FontWeight.bold,
+                      color: textColor.withOpacity(0.9),
+                    ),
+                  ),
+                ],
+              ),
+               Positioned(
+                bottom: 0,
+                right: 0,
+                child: Text(
+                  DateFormat('h:mm a').format(transaction.date),
                   style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
+                    fontSize: 10,
+                    color: subTextColor,
                   ),
                 ),
-              ],
+              ),
+            ],
+          ),
+        ),
+      ).animate().fadeIn().slideY(begin: 0.1);
+  }
+
+  Widget _buildBottomInputBar() {
+      // Glassmorphic Input Bar
+      return Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.surface.withOpacity(0.8), // Glass base
+            border: Border(top: BorderSide(color: Theme.of(context).dividerColor.withOpacity(0.1))),
+            boxShadow: [
+                 BoxShadow(
+                    color: Colors.black.withOpacity(0.05),
+                    blurRadius: 10,
+                    offset: const Offset(0, -2),
+                 ),
+            ]
+          ),
+          child: SafeArea(
+            top: false,
+            child: Row(
+                children: [
+                    Container(
+                        decoration: BoxDecoration(
+                            color: Theme.of(context).colorScheme.surfaceContainerHighest.withOpacity(0.5),
+                            shape: BoxShape.circle,
+                        ),
+                        child: IconButton(
+                            icon: const Icon(Icons.add),
+                             onPressed: () {}, // Attachment
+                             color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        ),
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                        child: GestureDetector(
+                            onTap: _navigateToAddGroupTransaction,
+                            child: Container(
+                                height: 48,
+                                padding: const EdgeInsets.symmetric(horizontal: 16),
+                                decoration: BoxDecoration(
+                                    color: Theme.of(context).colorScheme.surfaceContainerHighest.withOpacity(0.5),
+                                    borderRadius: BorderRadius.circular(24),
+                                    border: Border.all(color: Theme.of(context).dividerColor.withOpacity(0.1)),
+                                ),
+                                alignment: Alignment.centerLeft,
+                                child: Text(
+                                    AppLocalizations.of(context)!.addExpense,
+                                    style: TextStyle(
+                                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                        fontSize: 16,
+                                    ),
+                                ),
+                            ),
+                        ),
+                    ),
+                    const SizedBox(width: 8),
+                    FloatingActionButton(
+                        onPressed: _navigateToAddGroupTransaction,
+                        backgroundColor: Theme.of(context).colorScheme.primary,
+                        foregroundColor: Theme.of(context).colorScheme.onPrimary,
+                        elevation: 4,
+                        shape: const CircleBorder(),
+                        child: const Icon(Icons.arrow_forward_rounded),
+                    ),
+                ],
             ),
           ),
-        ],
-      ),
-    );
+      );
   }
+
+
 }

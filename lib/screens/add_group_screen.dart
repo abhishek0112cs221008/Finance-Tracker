@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/group_provider.dart';
 import '../models/group.dart';
+import '../l10n/app_localizations.dart';
 
 class AddGroupScreen extends StatefulWidget {
   const AddGroupScreen({super.key});
