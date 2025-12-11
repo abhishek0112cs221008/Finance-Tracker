@@ -30,7 +30,7 @@ class DBHelper {
       final path = join(await getDatabasesPath(), dbName);
       _database = await openDatabase(
         path,
-        version: 3,
+        version: 4,
         onCreate: (db, version) async {
           await db.execute('''
             CREATE TABLE $tableTransactions(
@@ -42,7 +42,9 @@ class DBHelper {
               date TEXT NOT NULL,
               groupId INTEGER,
               paidBy TEXT,
-              split TEXT
+              split TEXT,
+              receiptPath TEXT,
+              isSettlement INTEGER DEFAULT 0
             )
           ''');
           await db.execute('''
@@ -51,50 +53,44 @@ class DBHelper {
               name TEXT NOT NULL,
               members TEXT NOT NULL,
               paidBy TEXT NOT NULL,
-              createdAt TEXT NOT NULL
+              createdAt TEXT NOT NULL,
+              notes TEXT,
+              isArchived INTEGER DEFAULT 0,
+              type TEXT DEFAULT 'trip'
             )
           ''');
         },
         onUpgrade: (db, oldVersion, newVersion) async {
           if (oldVersion < 3) {
-            // Add new columns to the transactions table.
             try {
               await db.execute('ALTER TABLE $tableTransactions ADD COLUMN groupId INTEGER');
-            } catch (e) {
-              // Ignore if exists
-            }
+            } catch (_) {}
             try {
               await db.execute('ALTER TABLE $tableTransactions ADD COLUMN paidBy TEXT');
-            } catch (e) {
-              // Ignore if exists
-            }
+            } catch (_) {}
             try {
               await db.execute('ALTER TABLE $tableTransactions ADD COLUMN split TEXT');
-            } catch (e) {
-              // Ignore if exists
-            }
-            
-            // Add groups table if not exists (migrating from v2 of transactions.db to v3 of finance.db?
-            // Actually finance.db v3 is new. If upgrading from scratch, onCreate handles it.
-            // If user had finance.db v<3 (from previous dev), this handles it.
-            // If user had transactions.db, this is a NEW db file, so it starts fresh.
-            // We are changing dbName from transactions.db to finance.db.
-            // So on first run, it will create finance.db (v3) empty. 
-            // Old data in transactions.db will be lost to the user unless we migrate.
-            // For now, let's assume we start fresh or user accepts data loss on big upgrade, 
-            // OR we could try to copy data. 
-            // Given the instruction is "Industry-Level Upgrade", losing data is bad.
-            // But implementing migration from `transactions.db` to `finance.db` is complex.
-            // Let's stick to `finance.db`. If the user had `transactions.db`, it will just be ignored.
-            // I'll proceed with this.
+            } catch (_) {}
+            try {
+              await db.execute('ALTER TABLE $tableGroups ADD COLUMN paidBy TEXT');
+            } catch (_) {}
+          }
+          if (oldVersion < 4) {
              try {
-                // Ensure paidBy column exists in groups table
-                await db.execute('ALTER TABLE $tableGroups ADD COLUMN paidBy TEXT');
-             } catch (e) {
-               // Ignore if exists or table doesn't exist (handled by create?)
-               // Actually if tableGroups doesn't exist, this might fail or be irrelevant.
-               // It's better to just ensure tables exist.
-             }
+               await db.execute('ALTER TABLE $tableGroups ADD COLUMN notes TEXT');
+             } catch (_) {}
+             try {
+               await db.execute('ALTER TABLE $tableGroups ADD COLUMN isArchived INTEGER DEFAULT 0');
+             } catch (_) {}
+             try {
+               await db.execute('ALTER TABLE $tableGroups ADD COLUMN type TEXT DEFAULT "trip"');
+             } catch (_) {}
+             try {
+               await db.execute('ALTER TABLE $tableTransactions ADD COLUMN receiptPath TEXT');
+             } catch (_) {}
+             try {
+               await db.execute('ALTER TABLE $tableTransactions ADD COLUMN isSettlement INTEGER DEFAULT 0');
+             } catch (_) {}
           }
         },
       );

@@ -22,7 +22,6 @@ class _HomeScreenState extends State<HomeScreen> {
     const StatisticsScreen(),
     const GroupsScreen(),
     const WalletPage(),
-    const SettingsScreen(),
   ];
 
   void _onTabSelected(int index) {
@@ -46,10 +45,9 @@ class _HomeScreenState extends State<HomeScreen> {
           index: _selectedIndex,
           children: [
             const TransactionsScreen(),
-            const StatisticsScreen(), // Restored Stats
+            const StatisticsScreen(),
             const GroupsScreen(),
             const WalletPage(),
-            // Settings moved to Home Screen Header
           ],
         ),
         floatingActionButton: FloatingActionButton(
@@ -98,38 +96,51 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _buildTabItem(int index, IconData icon, String label) {
     final isSelected = _selectedIndex == index;
     final colorScheme = Theme.of(context).colorScheme;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     
-    return InkWell(
-      onTap: () => _onTabSelected(index),
-      borderRadius: BorderRadius.circular(12),
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeInOut,
-        padding: EdgeInsets.symmetric(horizontal: isSelected ? 16 : 12, vertical: 10),
-        decoration: BoxDecoration(
-          color: isSelected ? colorScheme.primary.withOpacity(0.1) : Colors.transparent,
-          borderRadius: BorderRadius.circular(50),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-             Icon(
-               icon,
-               color: isSelected ? colorScheme.primary : colorScheme.onSurfaceVariant,
-               size: 24,
-             ),
-             if (isSelected) ...[
-               const SizedBox(width: 8),
-               Text(
-                 label,
-                 style: TextStyle(
-                   color: colorScheme.primary,
-                   fontSize: 14,
-                   fontWeight: FontWeight.w600,
-                 ),
-               ),
-             ],
-          ],
+    return Expanded(
+      child: InkWell(
+        onTap: () => _onTabSelected(index),
+        borderRadius: BorderRadius.circular(12),
+        splashColor: colorScheme.primary.withOpacity(0.1),
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 4),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              AnimatedContainer(
+                duration: const Duration(milliseconds: 250),
+                curve: Curves.easeInOut,
+                padding: const EdgeInsets.all(4),
+                decoration: BoxDecoration(
+                  color: isSelected 
+                      ? colorScheme.primary 
+                      : Colors.transparent,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Icon(
+                  icon,
+                  color: isSelected 
+                      ? Colors.white 
+                      : colorScheme.onSurfaceVariant,
+                  size: 20,
+                ),
+              ),
+              const SizedBox(height: 2),
+              AnimatedDefaultTextStyle(
+                duration: const Duration(milliseconds: 250),
+                curve: Curves.easeInOut,
+                style: TextStyle(
+                  color: isSelected 
+                      ? colorScheme.primary 
+                      : colorScheme.onSurfaceVariant,
+                  fontSize: 9,
+                  fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
+                ),
+                child: Text(label),
+              ),
+            ],
+          ),
         ),
       ),
     );

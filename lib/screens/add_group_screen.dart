@@ -14,8 +14,16 @@ class AddGroupScreen extends StatefulWidget {
 class _AddGroupScreenState extends State<AddGroupScreen> {
   final _groupNameController = TextEditingController();
   final _memberNameController = TextEditingController();
-  final List<String> _members = [];
+  final List<String> _members = ['You']; // Default 'You' as member
+  String _selectedType = 'trip';
   bool _isSaving = false;
+
+  final List<Map<String, dynamic>> _groupTypes = [
+    {'id': 'trip', 'label': 'Trip', 'icon': Icons.flight},
+    {'id': 'home', 'label': 'Home', 'icon': Icons.home},
+    {'id': 'couple', 'label': 'Couple', 'icon': Icons.favorite},
+    {'id': 'other', 'label': 'Other', 'icon': Icons.group},
+  ];
 
   @override
   void dispose() {
@@ -39,6 +47,12 @@ class _AddGroupScreenState extends State<AddGroupScreen> {
   }
 
   void _removeMember(String member) {
+    if (member == 'You') {
+       ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('You cannot remove yourself')),
+      );
+      return;
+    }
     setState(() {
       _members.remove(member);
     });
@@ -47,9 +61,9 @@ class _AddGroupScreenState extends State<AddGroupScreen> {
   Future<void> _saveGroup() async {
     final groupName = _groupNameController.text.trim();
 
-    if (groupName.isEmpty || _members.isEmpty) {
+    if (groupName.isEmpty || _members.length < 2) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please enter a group name and at least one member')),
+        const SnackBar(content: Text('Please enter a group name and add at least one other member')),
       );
       return;
     }
@@ -59,8 +73,9 @@ class _AddGroupScreenState extends State<AddGroupScreen> {
     final newGroup = Group(
       name: groupName,
       members: _members,
-      paidBy: "You", // Assuming the current user is 'You'
+      paidBy: "You",
       createdAt: DateTime.now(),
+      type: _selectedType,
     );
 
     try {
@@ -83,6 +98,8 @@ class _AddGroupScreenState extends State<AddGroupScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Scaffold(
       appBar: AppBar(
         title: Text(AppLocalizations.of(context)!.newGroup),
@@ -105,9 +122,65 @@ class _AddGroupScreenState extends State<AddGroupScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
+              "Group Type",
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    color: colorScheme.primary,
+                    fontWeight: FontWeight.bold,
+                  ),
+            ),
+            const SizedBox(height: 12),
+            SizedBox(
+              height: 100,
+              child: ListView.separated(
+                scrollDirection: Axis.horizontal,
+                itemCount: _groupTypes.length,
+                separatorBuilder: (_, __) => const SizedBox(width: 12),
+                itemBuilder: (context, index) {
+                  final type = _groupTypes[index];
+                  final isSelected = _selectedType == type['id'];
+                  return InkWell(
+                    onTap: () => setState(() => _selectedType = type['id']),
+                    borderRadius: BorderRadius.circular(12),
+                    child: Container(
+                      width: 80,
+                      decoration: BoxDecoration(
+                        color: isSelected ? colorScheme.primaryContainer : colorScheme.surfaceContainer,
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                          color: isSelected ? colorScheme.primary : Colors.transparent,
+                          width: 2,
+                        ),
+                      ),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            type['icon'],
+                            color: isSelected ? colorScheme.onPrimaryContainer : colorScheme.onSurfaceVariant,
+                            size: 32,
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            type['label'],
+                            style: TextStyle(
+                              color: isSelected ? colorScheme.onPrimaryContainer : colorScheme.onSurfaceVariant,
+                              fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                              fontSize: 12,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+            
+            const SizedBox(height: 24),
+            Text(
               AppLocalizations.of(context)!.groupDetails,
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    color: Theme.of(context).colorScheme.primary,
+                    color: colorScheme.primary,
                     fontWeight: FontWeight.bold,
                   ),
             ),
@@ -116,7 +189,7 @@ class _AddGroupScreenState extends State<AddGroupScreen> {
               controller: _groupNameController,
               decoration: InputDecoration(
                 labelText: AppLocalizations.of(context)!.groupName,
-                hintText: 'e.g., Paris Trip',
+                hintText: 'e.g., Apartment 302',
                 border: const OutlineInputBorder(),
                 prefixIcon: const Icon(Icons.group),
               ),
@@ -126,7 +199,7 @@ class _AddGroupScreenState extends State<AddGroupScreen> {
             Text(
               AppLocalizations.of(context)!.members,
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    color: Theme.of(context).colorScheme.primary,
+                    color: colorScheme.primary,
                     fontWeight: FontWeight.bold,
                   ),
             ),
@@ -157,13 +230,15 @@ class _AddGroupScreenState extends State<AddGroupScreen> {
               spacing: 8,
               runSpacing: 8,
               children: _members.map((member) {
+                final isYou = member == 'You';
                 return Chip(
                   avatar: CircleAvatar(
                     backgroundColor: Theme.of(context).colorScheme.primaryContainer,
                     child: Text(member[0].toUpperCase()),
                   ),
                   label: Text(member),
-                  onDeleted: () => _removeMember(member),
+                  onDeleted: isYou ? null : () => _removeMember(member),
+                  deleteIcon: isYou ? null : const Icon(Icons.close, size: 18),
                 );
               }).toList(),
             ),

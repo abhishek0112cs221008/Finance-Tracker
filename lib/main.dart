@@ -9,6 +9,7 @@ import 'screens/pin_lock_screen.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'l10n/app_localizations.dart';
+import 'themes/app_themes.dart';
 
 class AppTheme {
   // Brand Colors
@@ -111,15 +112,21 @@ class AppTheme {
   );
 }
 
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Set system UI overlay style for a premium look
+  // Set system UI overlay style for edge-to-edge and hide notch
   SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
     statusBarColor: Colors.transparent,
     statusBarIconBrightness: Brightness.dark,
     systemNavigationBarColor: Colors.transparent,
   ));
+  
+  // Enable edge-to-edge mode (hides notch area)
+  SystemChrome.setEnabledSystemUIMode(
+    SystemUiMode.edgeToEdge,
+  );
 
   runApp(const ExpenseTrackerApp());
 }
@@ -138,6 +145,9 @@ class ExpenseTrackerApp extends StatelessWidget {
       ],
       child: Consumer<ThemeProvider>(
         builder: (context, themeProvider, child) {
+          final brightness = MediaQuery.of(context).platformBrightness;
+          final theme = AppThemes.getTheme(themeProvider.selectedTheme, brightness);
+          
           return MaterialApp(
             title: 'Finance Tracker Pro',
             debugShowCheckedModeBanner: false,
@@ -150,7 +160,7 @@ class ExpenseTrackerApp extends StatelessWidget {
             supportedLocales: const [
               Locale('en'), // English
             ],
-            theme: AppTheme.lightTheme.copyWith(
+            theme: theme.copyWith(
               pageTransitionsTheme: const PageTransitionsTheme(
                 builders: {
                   TargetPlatform.android: CupertinoPageTransitionsBuilder(),
@@ -158,7 +168,7 @@ class ExpenseTrackerApp extends StatelessWidget {
                 },
               ),
             ),
-            darkTheme: AppTheme.darkTheme.copyWith(
+            darkTheme: theme.copyWith(
               pageTransitionsTheme: const PageTransitionsTheme(
                 builders: {
                   TargetPlatform.android: CupertinoPageTransitionsBuilder(),

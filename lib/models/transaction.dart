@@ -12,6 +12,10 @@ class Transaction {
   final int? groupId;
   final String? paidBy;
   final Map<String, dynamic>? split;
+  
+  // New fields
+  final String? receiptPath;
+  final bool isSettlement;
 
   const Transaction({
     this.id,
@@ -23,6 +27,8 @@ class Transaction {
     this.groupId,
     this.paidBy,
     this.split,
+    this.receiptPath,
+    this.isSettlement = false,
   });
 
   Transaction copyWith({
@@ -35,6 +41,8 @@ class Transaction {
     int? groupId,
     String? paidBy,
     Map<String, dynamic>? split,
+    String? receiptPath,
+    bool? isSettlement,
   }) {
     return Transaction(
       id: id ?? this.id,
@@ -46,6 +54,8 @@ class Transaction {
       groupId: groupId ?? this.groupId,
       paidBy: paidBy ?? this.paidBy,
       split: split ?? this.split,
+      receiptPath: receiptPath ?? this.receiptPath,
+      isSettlement: isSettlement ?? this.isSettlement,
     );
   }
 
@@ -59,19 +69,9 @@ class Transaction {
       'date': date.toIso8601String(),
       'groupId': groupId,
       'paidBy': paidBy,
-      // split is handled specially in DBHelper because it needs JSON encoding
-      // we don't encode it here to avoid double encoding if DBHelper handles it, 
-      // but standard toMap usually returns primitives. 
-      // Let's return it as is, DBHelper can encode if needed, or we encode here?
-      // In db_helper_group.dart, it does: map['split'] = jsonEncode(transaction.split);
-      // So we leave it out of here or return it as null if you want strictly primitives?
-      // Actually, let's not include 'split' in toMap if it's complex, or include it?
-      // db_helper_group logic: final map = transaction.toMap(); map['split'] = jsonEncode(...)
-      // So let's NOT include it here to avoid confusion, OR include it as Map and let DB helper convert.
-      // But standard sqlite map expects primitives. 
-      // Let's leave it out of standard toMap for now to match current pattern, 
-      // but wait, if I want a clean model, toMap should probably include everything.
-      // Let's include it but remember to handle JSON encoding in DB layer.
+      'receiptPath': receiptPath,
+      'isSettlement': isSettlement ? 1 : 0,
+       // split handled by DBHelper
     };
   }
 
@@ -90,6 +90,10 @@ class Transaction {
               ? Map<String, dynamic>.from(jsonDecode(map['split']))
               : Map<String, dynamic>.from(map['split']))
           : null,
+      receiptPath: map['receiptPath'],
+      isSettlement: map['isSettlement'] != null 
+          ? ((map['isSettlement'] is int) ? (map['isSettlement'] == 1) : (map['isSettlement'] as bool))
+          : false,
     );
   }
 
@@ -105,8 +109,9 @@ class Transaction {
       other.category == category &&
       other.date == date &&
       other.groupId == groupId &&
-      other.paidBy == paidBy;
-      // Map equality is tricky, simplifying for now
+      other.paidBy == paidBy &&
+      other.receiptPath == receiptPath &&
+      other.isSettlement == isSettlement;
   }
 
   @override
@@ -118,11 +123,13 @@ class Transaction {
       category.hashCode ^
       date.hashCode ^
       groupId.hashCode ^
-      paidBy.hashCode;
+      paidBy.hashCode ^
+      receiptPath.hashCode ^
+      isSettlement.hashCode;
   }
 
   @override
   String toString() {
-    return 'Transaction(id: $id, name: $name, amount: $amount, isIncome: $isIncome, category: $category, date: $date, groupId: $groupId, paidBy: $paidBy)';
+    return 'Transaction(id: $id, name: $name, amount: $amount, isIncome: $isIncome, category: $category, date: $date, groupId: $groupId, paidBy: $paidBy, receiptPath: $receiptPath, isSettlement: $isSettlement)';
   }
 }

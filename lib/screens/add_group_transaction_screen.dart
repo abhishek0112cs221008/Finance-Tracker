@@ -8,8 +8,13 @@ import '../l10n/app_localizations.dart';
 
 class AddGroupTransactionScreen extends StatefulWidget {
   final Group group;
+  final Transaction? transactionToEdit;
 
-  const AddGroupTransactionScreen({super.key, required this.group});
+  const AddGroupTransactionScreen({
+    super.key, 
+    required this.group,
+    this.transactionToEdit,
+  });
 
   @override
   State<AddGroupTransactionScreen> createState() =>
@@ -35,15 +40,47 @@ class _AddGroupTransactionScreenState extends State<AddGroupTransactionScreen> {
     {'name': 'Utilities', 'icon': Icons.lightbulb, 'color': Colors.yellow},
     {'name': 'Rent', 'icon': Icons.home, 'color': Colors.green},
     {'name': 'Travel', 'icon': Icons.flight, 'color': Colors.teal},
+    {'name': 'Health', 'icon': Icons.local_hospital, 'color': Colors.red},
     {'name': 'Others', 'icon': Icons.more_horiz, 'color': Colors.grey},
   ];
 
   @override
   void initState() {
     super.initState();
-    _paidBy = widget.group.members.first;
+    _initializeData();
+  }
+
+  void _initializeData() {
+    // Initialize split map with all true by default
     for (var member in widget.group.members) {
       _splitMembers[member] = true;
+    }
+
+    if (widget.transactionToEdit != null) {
+      final t = widget.transactionToEdit!;
+      _nameController.text = t.name;
+      _amountController.text = t.amount.toString(); // consider removal of .00 if needed
+      _selectedCategory = t.category;
+      
+      if (t.paidBy != null && widget.group.members.contains(t.paidBy)) {
+        _paidBy = t.paidBy!;
+      } else {
+        _paidBy = widget.group.members.contains('You') ? 'You' : widget.group.members.first;
+      }
+
+      // Update split selection based on existing transaction
+      if (t.split != null) {
+        for (var member in widget.group.members) {
+          _splitMembers[member] = t.split!.containsKey(member);
+        }
+      }
+    } else {
+      // New Transaction Default
+      if (widget.group.members.contains('You')) {
+        _paidBy = 'You';
+      } else {
+        _paidBy = widget.group.members.first;
+      }
     }
   }
 
@@ -54,13 +91,6 @@ class _AddGroupTransactionScreenState extends State<AddGroupTransactionScreen> {
     _nameFocusNode.dispose();
     _amountFocusNode.dispose();
     super.dispose();
-  }
-
-  Map<String, dynamic> _getCategoryData(String categoryName) {
-    return _categories.firstWhere(
-      (cat) => cat['name'] == categoryName,
-      orElse: () => _categories.last,
-    );
   }
 
   Future<void> _saveTransaction() async {
@@ -96,18 +126,37 @@ class _AddGroupTransactionScreenState extends State<AddGroupTransactionScreen> {
       final perPersonAmount = amount / membersToSplit.length;
       final splitMap = {for (var member in membersToSplit) member: perPersonAmount};
 
-      final newTransaction = Transaction(
-        name: name,
-        amount: amount,
-        isIncome: false,
-        category: _selectedCategory,
-        date: DateTime.now(),
-        groupId: widget.group.id,
-        paidBy: _paidBy,
-        split: splitMap,
-      );
-
-      await context.read<TransactionProvider>().addTransaction(newTransaction);
+      if (widget.transactionToEdit != null) {
+        // Update existing
+        final updatedTransaction = Transaction(
+          id: widget.transactionToEdit!.id,
+          name: name,
+          amount: amount,
+          isIncome: widget.transactionToEdit!.isIncome,
+          category: _selectedCategory,
+          date: widget.transactionToEdit!.date, // Keep original date
+          groupId: widget.group.id,
+          paidBy: _paidBy,
+          split: splitMap,
+          receiptPath: widget.transactionToEdit!.receiptPath,
+          isSettlement: widget.transactionToEdit!.isSettlement,
+        );
+        await context.read<TransactionProvider>().updateTransaction(updatedTransaction);
+      } else {
+        // Create new
+        final newTransaction = Transaction(
+          name: name,
+          amount: amount,
+          isIncome: false,
+          category: _selectedCategory,
+          date: DateTime.now(),
+          groupId: widget.group.id,
+          paidBy: _paidBy,
+          split: splitMap,
+          receiptPath: null,
+        );
+        await context.read<TransactionProvider>().addTransaction(newTransaction);
+      }
 
       if (mounted) {
         Navigator.of(context).pop(true);
@@ -130,9 +179,10 @@ class _AddGroupTransactionScreenState extends State<AddGroupTransactionScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isEdit = widget.transactionToEdit != null;
     return Scaffold(
       appBar: AppBar(
-        title: Text(AppLocalizations.of(context)!.addExpense),
+        title: Text(isEdit ? "Edit Expense" : AppLocalizations.of(context)!.addExpense),
         actions: [
           TextButton(
             onPressed: _isSaving ? null : _saveTransaction,
@@ -152,6 +202,8 @@ class _AddGroupTransactionScreenState extends State<AddGroupTransactionScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _buildAmountCard(),
+            const SizedBox(height: 16),
+            _buildPayerSection(),
             const SizedBox(height: 16),
             _buildDetailsCard(),
             const SizedBox(height: 16),
@@ -195,6 +247,26 @@ class _AddGroupTransactionScreenState extends State<AddGroupTransactionScreen> {
         ),
       ),
     );
+  }
+
+  Widget _buildPayerSection() {
+     return DropdownButtonFormField<String>(
+        value: _paidBy,
+        decoration: InputDecoration(
+             labelText: "Paid By",
+             prefixIcon: Icon(Icons.person),
+             border: OutlineInputBorder(),
+        ),
+        items: widget.group.members.map((member) {
+             return DropdownMenuItem(
+                 value: member,
+                 child: Text(member == 'You' ? 'You' : member),
+             );
+        }).toList(),
+        onChanged: (val) {
+             if (val != null) setState(() => _paidBy = val);
+        },
+     );
   }
 
   Widget _buildDetailsCard() {
@@ -268,7 +340,7 @@ class _AddGroupTransactionScreenState extends State<AddGroupTransactionScreen> {
           children: widget.group.members.map((member) {
             final isSelected = _splitMembers[member] ?? false;
             return FilterChip(
-              label: Text(member),
+              label: Text(member == 'You' ? 'You' : member),
               selected: isSelected,
               onSelected: (selected) {
                 setState(() {
