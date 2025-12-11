@@ -1,6 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android" package="${packageName}">
     <application
-        android:label="Finance Tracker"
+        android:label="Finance Tracker PRO"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

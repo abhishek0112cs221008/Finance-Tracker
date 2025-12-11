@@ -74,204 +74,213 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
-    final backgroundColor = isDarkMode ? const Color(0xFF1C1C1E) : Colors.white;
-    final cardColor = isDarkMode ? const Color(0xFF2C2C2E) : Colors.grey[100]!;
-    final textColor = isDarkMode ? Colors.white : Colors.black;
-    final hintColor = isDarkMode ? Colors.white54 : Colors.black54;
-    final switchTrackColor = isDarkMode
-        ? MaterialStateProperty.all(const Color(0xFF3A3A3C))
-        : null;
+    final colorScheme = Theme.of(context).colorScheme;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: backgroundColor,
+      backgroundColor: colorScheme.surface,
       appBar: AppBar(
         title: Text(
           "Add Transaction",
           style: TextStyle(
-            color: textColor,
-            fontWeight: FontWeight.w600,
+            fontWeight: FontWeight.w700,
             letterSpacing: -0.5,
           ),
         ),
         backgroundColor: Colors.transparent,
         elevation: 0,
         centerTitle: true,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios, color: textColor),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildTextField(
-              "Transaction Name",
-              _nameController,
-              Icons.edit_note,
-              cardColor,
-              textColor,
-              hintColor,
-            ),
-            const SizedBox(height: 16),
-            _buildTextField(
-              "Amount",
-              _amountController,
-              Icons.attach_money,
-              cardColor,
-              textColor,
-              hintColor,
-              isNumber: true,
-            ),
-            const SizedBox(height: 16),
-            _buildCategoryDropdown(cardColor, textColor, hintColor),
-            if (_selectedCategory == 'Others')
-              _buildCustomCategoryField(
-                  cardColor, textColor, hintColor),
-            const SizedBox(height: 16),
-            _buildSwitchTile(textColor, switchTrackColor),
-            const SizedBox(height: 32),
-            _buildAddButton(textColor, isDarkMode),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildTextField(
-      String label,
-      TextEditingController controller,
-      IconData icon,
-      Color fillColor,
-      Color textColor,
-      Color hintColor,
-      {bool isNumber = false}) {
-    return TextField(
-      controller: controller,
-      keyboardType: isNumber
-          ? const TextInputType.numberWithOptions(decimal: true)
-          : TextInputType.text,
-      inputFormatters: isNumber
-          ? [FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,2}'))]
-          : null,
-      style: TextStyle(fontSize: 16, color: textColor),
-      cursorColor: Theme.of(context).colorScheme.primary,
-      decoration: InputDecoration(
-        labelText: label,
-        labelStyle: TextStyle(color: hintColor, fontSize: 16),
-        prefixIcon: Icon(icon, color: hintColor),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide.none,
-        ),
-        filled: true,
-        fillColor: fillColor,
-        contentPadding:
-            const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
-      ),
-    );
-  }
-
-  Widget _buildCategoryDropdown(
-      Color fillColor, Color textColor, Color hintColor) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      decoration: BoxDecoration(
-        color: fillColor,
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: DropdownButtonFormField<String>(
-        value: _selectedCategory,
-        style: TextStyle(color: textColor, fontSize: 16),
-        dropdownColor: fillColor,
-        icon: Icon(Icons.arrow_drop_down, color: hintColor),
-        decoration: InputDecoration(
-          labelText: "Category",
-          labelStyle: TextStyle(color: hintColor, fontSize: 16),
-          border: InputBorder.none,
-          isDense: true,
-        ),
-        items: ['Food', 'Transport', 'Shopping', 'Entertainment', 'Others']
-            .map((cat) => DropdownMenuItem(value: cat, child: Text(cat)))
-            .toList(),
-        onChanged: (value) => setState(() => _selectedCategory = value!),
-      ),
-    );
-  }
-
-  Widget _buildCustomCategoryField(
-      Color fillColor, Color textColor, Color hintColor) {
-    return Padding(
-      padding: const EdgeInsets.only(top: 16),
-      child: _buildTextField(
-        "Custom Category Name",
-        _customCategoryController,
-        Icons.category,
-        fillColor,
-        textColor,
-        hintColor,
-      ),
-    );
-  }
-
-  Widget _buildSwitchTile(
-      Color textColor, MaterialStateProperty<Color?>? trackColor) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Theme.of(context).brightness == Brightness.dark
-            ? const Color(0xFF2C2C2E)
-            : Colors.grey[100],
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              "Is Income?",
-              style: TextStyle(
-                fontSize: 16,
-                color: textColor,
-                fontWeight: FontWeight.w500,
+            // Transaction Name Field
+            TextField(
+              controller: _nameController,
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+              decoration: InputDecoration(
+                labelText: "Transaction Name",
+                prefixIcon: Icon(Icons.edit_note_rounded, color: colorScheme.primary),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                filled: true,
+                fillColor: isDark 
+                    ? colorScheme.surfaceContainerHighest
+                    : colorScheme.surfaceContainer,
               ),
             ),
-            Switch.adaptive(
-              value: _isIncome,
-              activeColor: Colors.greenAccent,
-              inactiveThumbColor: Colors.redAccent,
-              trackColor: trackColor,
-              onChanged: (value) => setState(() => _isIncome = value),
+            
+            const SizedBox(height: 16),
+            
+            // Amount Field with Rupay Symbol
+            TextField(
+              controller: _amountController,
+              keyboardType: const TextInputType.numberWithOptions(decimal: true),
+              inputFormatters: [
+                FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,2}'))
+              ],
+              style: TextStyle(
+                fontSize: 20, 
+                fontWeight: FontWeight.w700,
+                letterSpacing: -0.5,
+              ),
+              decoration: InputDecoration(
+                labelText: "Amount",
+                prefixIcon: Container(
+                  padding: const EdgeInsets.all(12),
+                  child: Text(
+                    '₹',
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.w800,
+                      color: colorScheme.primary,
+                    ),
+                  ),
+                ),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                filled: true,
+                fillColor: isDark 
+                    ? colorScheme.surfaceContainerHighest
+                    : colorScheme.surfaceContainer,
+              ),
+            ),
+            
+            const SizedBox(height: 16),
+            
+            // Category Dropdown
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+              decoration: BoxDecoration(
+                color: isDark 
+                    ? colorScheme.surfaceContainerHighest
+                    : colorScheme.surfaceContainer,
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(
+                  color: colorScheme.outline.withOpacity(0.2),
+                ),
+              ),
+              child: DropdownButtonFormField<String>(
+                value: _selectedCategory,
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  color: colorScheme.onSurface,
+                ),
+                dropdownColor: isDark 
+                    ? colorScheme.surfaceContainerHighest
+                    : colorScheme.surfaceContainer,
+                icon: Icon(Icons.arrow_drop_down_rounded, color: colorScheme.primary),
+                decoration: InputDecoration(
+                  labelText: "Category",
+                  prefixIcon: Icon(Icons.category_rounded, color: colorScheme.primary),
+                  border: InputBorder.none,
+                ),
+                items: ['Food', 'Transport', 'Shopping', 'Entertainment', 'Bills', 'Health', 'Education', 'Others']
+                    .map((cat) => DropdownMenuItem(
+                          value: cat,
+                          child: Text(cat),
+                        ))
+                    .toList(),
+                onChanged: (value) => setState(() => _selectedCategory = value!),
+              ),
+            ),
+            
+            if (_selectedCategory == 'Others')
+              Padding(
+                padding: const EdgeInsets.only(top: 16),
+                child: TextField(
+                  controller: _customCategoryController,
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                  decoration: InputDecoration(
+                    labelText: "Custom Category Name",
+                    prefixIcon: Icon(Icons.edit_rounded, color: colorScheme.primary),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    filled: true,
+                    fillColor: isDark 
+                        ? colorScheme.surfaceContainerHighest
+                        : colorScheme.surfaceContainer,
+                  ),
+                ),
+              ),
+            
+            const SizedBox(height: 16),
+            
+            // Income/Expense Toggle
+            Container(
+              decoration: BoxDecoration(
+                color: isDark 
+                    ? colorScheme.surfaceContainerHighest
+                    : colorScheme.surfaceContainer,
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(
+                  color: colorScheme.outline.withOpacity(0.2),
+                ),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
+                      children: [
+                        Icon(
+                          _isIncome ? Icons.trending_down_rounded : Icons.trending_up_rounded,
+                          color: _isIncome ? Colors.green : Colors.red,
+                        ),
+                        const SizedBox(width: 12),
+                        Text(
+                          _isIncome ? "Income" : "Expense",
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
+                    ),
+                    Switch(
+                      value: _isIncome,
+                      activeColor: Colors.green,
+                      inactiveThumbColor: Colors.red,
+                      onChanged: (value) => setState(() => _isIncome = value),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            
+            const SizedBox(height: 32),
+            
+            // Add Button
+            SizedBox(
+              width: double.infinity,
+              height: 56,
+              child: FilledButton(
+                onPressed: _addTransaction,
+                style: FilledButton.styleFrom(
+                  backgroundColor: colorScheme.primary,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  elevation: 2,
+                ),
+                child: Text(
+                  "Add Transaction",
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: -0.5,
+                  ),
+                ),
+              ),
             ),
           ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildAddButton(Color textColor, bool isDarkMode) {
-    return SizedBox(
-      width: double.infinity,
-      child: ElevatedButton(
-        onPressed: _addTransaction,
-        style: ElevatedButton.styleFrom(
-          foregroundColor: isDarkMode ? Colors.black : Colors.white,
-          backgroundColor: isDarkMode ? Colors.white : Colors.black,
-          padding: const EdgeInsets.symmetric(vertical: 16),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-          elevation: 0,
-          shadowColor: Colors.transparent,
-        ),
-        child: Text(
-          "Add Transaction",
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-            letterSpacing: -0.5,
-            color: isDarkMode ? Colors.black : Colors.white,
-          ),
         ),
       ),
     );
