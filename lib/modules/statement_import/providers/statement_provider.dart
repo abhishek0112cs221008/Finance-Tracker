@@ -124,6 +124,12 @@ class StatementProvider with ChangeNotifier {
       }
   }
 
+  Future<void> deleteTransaction(int id) async {
+      await _dbHelper.deleteTransaction(id);
+      _transactions.removeWhere((t) => t.id == id);
+      notifyListeners();
+  }
+
   Future<void> applyFilters({
       DateTime? startDate,
       DateTime? endDate,

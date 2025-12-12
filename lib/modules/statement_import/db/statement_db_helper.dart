@@ -42,6 +42,7 @@ CREATE TABLE imported_transactions (
   )
 ''');
 
+
     await db.execute('''
 CREATE TABLE person_map ( 
   id $idType, 

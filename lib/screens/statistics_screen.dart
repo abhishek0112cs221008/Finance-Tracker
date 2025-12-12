@@ -889,7 +889,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
             child: BarChart(
               BarChartData(
                 alignment: BarChartAlignment.spaceAround,
-                maxY: maxValue * 1.2,
+                maxY: maxValue > 0 ? maxValue * 1.2 : 100,
                 barTouchData: BarTouchData(enabled: false),
                 titlesData: FlTitlesData(
                   show: true,
@@ -922,7 +922,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                 gridData: FlGridData(
                   show: true,
                   drawVerticalLine: false,
-                  horizontalInterval: maxValue / 4,
+                  horizontalInterval: maxValue > 0 ? maxValue / 4 : 25,
                   getDrawingHorizontalLine: (value) {
                     return FlLine(
                       color: colorScheme.outlineVariant.withOpacity(0.2),

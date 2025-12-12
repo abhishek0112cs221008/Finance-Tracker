@@ -99,6 +99,8 @@ class _ImportDashboardScreenState extends State<ImportDashboardScreen> {
 
   // ... (rest of the code)
 
+
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -144,6 +146,7 @@ class _ImportDashboardScreenState extends State<ImportDashboardScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+
                        // 1. Balance Card (Hero Style)
                        Container(
                          width: double.infinity,
@@ -177,70 +180,109 @@ class _ImportDashboardScreenState extends State<ImportDashboardScreen> {
                          ),
                        ),
                        const SizedBox(height: 24),
+
+                       // Quick Actions Row
+                       Row(
+                         mainAxisAlignment: MainAxisAlignment.spaceAround,
+                         children: [
+                            GestureDetector(
+                              onTap: () => _showImportOptions(context),
+                              child: _buildQuickAction(
+                                context, 
+                                Icons.file_upload_outlined, 
+                                "Import",
+                                [const Color(0xFF34C759), const Color(0xFFb0e4b9)], // Green
+                              ),
+                            ),
+                            GestureDetector(
+                              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => PersonSummaryScreen())),
+                              child: _buildQuickAction(
+                                context, 
+                                Icons.pie_chart_outline_rounded, 
+                                "Analysis",
+                                [const Color(0xFF007AFF), const Color(0xFF3395FF)], // Blue
+                              ),
+                            ),
+                            GestureDetector(
+                              onTap: () => _exportToPDF(context),
+                              child: _buildQuickAction(
+                                context, 
+                                Icons.picture_as_pdf_rounded, 
+                                "PDF",
+                                [const Color(0xFFFF9500), const Color(0xFFFFCC00)], // Orange
+                              ),
+                            ),
+                             GestureDetector(
+                              onTap: () => _confirmClearAll(context),
+                              child: _buildQuickAction(
+                                context, 
+                                Icons.delete_outline_rounded, 
+                                "Clear All",
+                                [const Color(0xFFFF3B30), const Color(0xFFFF6961)], // Red
+                              ),
+                            ),
+                         ],
+                       ),
+
+                       const SizedBox(height: 24),
                        
                        // 2. Chart Section
                        if (totalExpense > 0 || totalIncome > 0)
-                         Container(
-                           height: 180,
-                           padding: const EdgeInsets.all(20),
-                           decoration: BoxDecoration(
-                             color: colorScheme.surface,
-                             borderRadius: BorderRadius.circular(24),
-                             border: Border.all(color: colorScheme.outline.withOpacity(0.1)),
-                           ),
-                           child: Row(
-                             children: [
-                               Expanded(
-                                 child: PieChart(
-                                   PieChartData(
-                                     sections: [
-                                       PieChartSectionData(
-                                         color: colorScheme.primary,
-                                         value: totalIncome,
-                                         title: '',
-                                         radius: 25,
-                                       ),
-                                       PieChartSectionData(
-                                         color: Colors.redAccent,
-                                         value: totalExpense,
-                                         title: '',
-                                         radius: 25,
-                                       ),
-                                     ],
-                                     centerSpaceRadius: 40,
-                                     sectionsSpace: 2,
-                                   ),
-                                 ),
-                               ),
-                               const SizedBox(width: 20),
-                               Column(
-                                 mainAxisAlignment: MainAxisAlignment.center,
-                                 crossAxisAlignment: CrossAxisAlignment.start,
-                                 children: [
-                                   _buildLegendItem("Income", colorScheme.primary, "${((totalIncome / (totalIncome + totalExpense)) * 100).toStringAsFixed(0)}%"),
-                                   const SizedBox(height: 12),
-                                   _buildLegendItem("Expense", Colors.redAccent, "${((totalExpense / (totalIncome + totalExpense)) * 100).toStringAsFixed(0)}%"),
-                                 ],
-                               )
-                             ],
-                           ),
-                         ),
-                       
-                       const SizedBox(height: 24),
-                       Row(
-                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                         children: [
-                           Text("Recent Transactions", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: colorScheme.onSurface)),
-                           IconButton(
-                             icon: Icon(Icons.filter_list_rounded, color: colorScheme.primary),
-                             onPressed: () => _showFilterSheet(context),
-                           )
-                         ],
-                       ),
-                    ],
-                  ),
-                ),
-              ),
+                          Container(
+                            height: 180,
+                            padding: const EdgeInsets.all(20),
+                            decoration: BoxDecoration(
+                              color: colorScheme.surface,
+                              borderRadius: BorderRadius.circular(24),
+                              border: Border.all(color: colorScheme.outline.withOpacity(0.1)),
+                            ),
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  child: PieChart(
+                                    PieChartData(
+                                      sections: [
+                                        PieChartSectionData(
+                                          color: colorScheme.primary,
+                                          value: totalIncome,
+                                          title: '',
+                                          radius: 25,
+                                        ),
+                                        PieChartSectionData(
+                                          color: Colors.redAccent,
+                                          value: totalExpense,
+                                          title: '',
+                                          radius: 25,
+                                        ),
+                                      ],
+                                      centerSpaceRadius: 40,
+                                      sectionsSpace: 2,
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(width: 20),
+                                Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    _buildLegendItem("Income", colorScheme.primary, "${((totalIncome / (totalIncome + totalExpense)) * 100).toStringAsFixed(0)}%"),
+                                    const SizedBox(height: 12),
+                                    _buildLegendItem("Expense", Colors.redAccent, "${((totalExpense / (totalIncome + totalExpense)) * 100).toStringAsFixed(0)}%"),
+                                  ],
+                                )
+                              ],
+                            ),
+                          ),
+                        
+                        const SizedBox(height: 24),
+                        
+                     ],
+                   ),
+                 ),
+               ),
+
+
+
 
               // Search Bar Pinned
               SliverAppBar(
@@ -311,25 +353,7 @@ class _ImportDashboardScreenState extends State<ImportDashboardScreen> {
     );
   }
 
-  Widget _buildMiniStat(String label, double amount, IconData icon, Color color) {
-    return Row(
-      children: [
-        Container(
-          padding: const EdgeInsets.all(8),
-          decoration: BoxDecoration(color: color.withOpacity(0.2), shape: BoxShape.circle),
-          child: Icon(icon, color: color, size: 16),
-        ),
-        const SizedBox(width: 12),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-             Text(label, style: TextStyle(color: Colors.white.withOpacity(0.7), fontSize: 12)),
-             Text("₹${NumberFormat.compact().format(amount)}", style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
-          ],
-        )
-      ],
-    );
-  }
+
 
   Widget _buildLegendItem(String label, Color color, String value) {
     return Row(
@@ -638,7 +662,17 @@ class _ImportDashboardScreenState extends State<ImportDashboardScreen> {
                               style: FilledButton.styleFrom(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16))),
                               child: const Text("Save Changes", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                           ),
-                      )
+                      ),
+                      const SizedBox(height: 16),
+                      TextButton.icon(
+                          onPressed: () {
+                              Navigator.pop(ctx);
+                              Provider.of<StatementProvider>(context, listen: false).deleteTransaction(t.id!);
+                          },
+                          icon: const Icon(Icons.delete_outline, color: Colors.red),
+                          label: const Text("Delete Transaction", style: TextStyle(color: Colors.red)),
+                      ),
+                      const SizedBox(height: 16),
                   ],
               ),
           )
@@ -881,5 +915,234 @@ class _ImportDashboardScreenState extends State<ImportDashboardScreen> {
               ),
           ),
       );
+  }
+
+  Widget _buildMiniStat(String label, double amount, IconData icon, Color color) {
+    return Row(
+      children: [
+        Container(
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(color: color.withOpacity(0.2), shape: BoxShape.circle),
+          child: Icon(icon, color: color, size: 16),
+        ),
+        const SizedBox(width: 12),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+             Text(label, style: TextStyle(color: Colors.white.withOpacity(0.7), fontSize: 12)),
+             Text("₹${NumberFormat.compact().format(amount)}", style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
+          ],
+        )
+      ],
+    );
+  }
+
+  Widget _buildQuickAction(BuildContext context, IconData icon, String label, List<Color> colors) {
+     final colorScheme = Theme.of(context).colorScheme;
+     
+     return Column(
+       children: [
+         Container(
+           height: 60,
+           width: 60,
+           decoration: BoxDecoration(
+             gradient: LinearGradient(
+               colors: colors,
+               begin: Alignment.topLeft,
+               end: Alignment.bottomRight,
+             ),
+             borderRadius: BorderRadius.circular(18),
+             boxShadow: [
+               BoxShadow(
+                 color: colors[0].withOpacity(0.4),
+                 blurRadius: 10,
+                 offset: const Offset(0, 4),
+               ),
+             ],
+           ),
+           child: Stack(
+             children: [
+               // Gloss Shine
+               Positioned(
+                 top: 0, left: 0, right: 0, height: 30,
+                 child: Container(
+                   decoration: BoxDecoration(
+                     gradient: LinearGradient(
+                       colors: [Colors.white.withOpacity(0.3), Colors.white.withOpacity(0.0)],
+                       begin: Alignment.topCenter,
+                       end: Alignment.bottomCenter,
+                     ),
+                     borderRadius: const BorderRadius.vertical(top: Radius.circular(18)),
+                   ),
+                   child: null,
+                 ),
+               ),
+               // Icon
+               Center(
+                 child: Icon(
+                   icon, 
+                   color: Colors.white,
+                   size: 26,
+                   shadows: [Shadow(color: Colors.black.withOpacity(0.2), blurRadius: 4, offset: const Offset(0, 2))],
+                 ),
+               ),
+             ],
+           ),
+         ),
+         const SizedBox(height: 8),
+         Text(
+           label, 
+           style: TextStyle(
+             fontSize: 12, 
+             fontWeight: FontWeight.w600, 
+             color: colorScheme.onSurface.withOpacity(0.8),
+           ),
+         ),
+       ],
+     );
+  }
+  Future<void> _handleImport(BuildContext context) async {
+      // 1. Show Loading Dialog
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => Dialog(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          child: Padding(
+            padding: const EdgeInsets.all(24.0),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const CircularProgressIndicator(color: Colors.blueAccent),
+                const SizedBox(width: 20),
+                const Text("Processing Statement...\nPlease wait.", style: TextStyle(fontWeight: FontWeight.w600)),
+              ],
+            ),
+          ),
+        ),
+      );
+
+      try {
+        // 2. Perform Import
+        final count = await Provider.of<StatementProvider>(context, listen: false).importFile();
+        
+        // 3. Close Loading Dialog
+        if (mounted) Navigator.pop(context); 
+
+        // 4. Show Success
+        if (mounted) {
+           ScaffoldMessenger.of(context).showSnackBar(
+             SnackBar(
+               content: Text("Successfully imported $count transactions!"),
+               backgroundColor: Colors.green,
+               behavior: SnackBarBehavior.floating,
+             ),
+           );
+        }
+      } catch (e) {
+        // 3. Close Loading Dialog (on Error)
+        if (mounted) Navigator.pop(context);
+
+        // 5. Show Error Dialog
+        if (mounted) {
+          showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+              title: const Text("Import Failed"),
+              content: Text(e.toString().replaceAll("Exception:", "").trim()),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text("OK", style: TextStyle(color: Colors.redAccent)),
+                )
+              ],
+            ),
+          );
+        }
+      }
+  }
+
+  void _showImportOptions(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (context) => Container(
+        padding: const EdgeInsets.all(24),
+        decoration: BoxDecoration(
+          color: Theme.of(context).scaffoldBackgroundColor,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              "Select Statement Source",
+              style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 24),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                _buildSourceOption(
+                  context, 
+                  "PhonePe", 
+                  Icons.account_balance_wallet_rounded, 
+                  const Color(0xFF673AB7), // Purple
+                  () {
+                    Navigator.pop(context);
+                    _handleImport(context);
+                  }
+                ),
+                _buildSourceOption(
+                  context, 
+                  "MobiKwik", 
+                  Icons.flash_on_rounded, 
+                  const Color(0xFF0091EA), // Blue
+                  () {
+                    Navigator.pop(context);
+                    _handleImport(context);
+                  }
+                ),
+                _buildSourceOption(
+                  context, 
+                  "Other", 
+                  Icons.receipt_long_rounded, 
+                  const Color(0xFF757575), // Grey
+                  () {
+                    Navigator.pop(context);
+                    _handleImport(context);
+                  }
+                ),
+              ],
+            ),
+            const SizedBox(height: 24),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSourceOption(BuildContext context, String label, IconData icon, Color color, VoidCallback onTap) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Column(
+        children: [
+          Container(
+            width: 70,
+            height: 70,
+            decoration: BoxDecoration(
+              color: color.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(color: color.withOpacity(0.3)),
+            ),
+            child: Icon(icon, color: color, size: 32),
+          ),
+          const SizedBox(height: 12),
+          Text(label, style: const TextStyle(fontWeight: FontWeight.w600)),
+        ],
+      ),
+    );
   }
 }
