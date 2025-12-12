@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:ui';
 import 'package:project_track_your_finance/screens/groups_screen.dart';
 import 'package:provider/provider.dart';
 import '../providers/transaction_provider.dart';
@@ -10,7 +11,9 @@ import 'home_screen.dart';
 import 'settings_screen.dart';
 import '../utils/pdf_export.dart';
 import '../utils/wallet_pdf_export.dart';
+import 'package:project_track_your_finance/screens/calculator_screen.dart';
 import 'help_support_screen.dart';
+import '../modules/statement_import/screens/import_dashboard_screen.dart';
 import 'about_screen.dart';
 
 class TransactionsScreen extends StatefulWidget {
@@ -334,11 +337,23 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
                         children: [
                            GestureDetector(
                              onTap: _showFilterOptions,
-                             child: _buildQuickAction(context, Icons.filter_list_rounded, "Filter"),
+                             child: _buildQuickAction(
+                               context, 
+                               Icons.filter_list_rounded, 
+                               "Filter",
+                               [const Color(0xFF007AFF), const Color(0xFF3395FF)], // Blue
+                             ),
                            ),
                            GestureDetector(
-                             onTap: () => _exportToPDF(context),
-                             child: _buildQuickAction(context, Icons.file_download_outlined, "Export"),
+                             onTap: () {
+                               Navigator.push(context, MaterialPageRoute(builder: (context) => const ImportDashboardScreen()));
+                             },
+                             child: _buildQuickAction(
+                               context, 
+                               Icons.file_upload_outlined, 
+                               "Import",
+                               [const Color(0xFF34C759), const Color(0xFFb0e4b9)], // Green
+                             ),
                            ),
                            GestureDetector(
                              onTap: () {
@@ -347,47 +362,101 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
                                  MaterialPageRoute(builder: (context) => const SettingsScreen()),
                                );
                              },
-                             child: _buildQuickAction(context, Icons.settings_rounded, "Settings"),
+                             child: _buildQuickAction(
+                               context, 
+                               Icons.settings_rounded, 
+                               "Settings",
+                               [const Color(0xFF8E8E93), const Color(0xFFAEB0B6)], // Metal Grey
+                             ),
                            ),
                            GestureDetector(
-                             onTap: () {
-                               // Show More Menu
-                               showModalBottomSheet(
-                                 context: context,
-                                 shape: const RoundedRectangleBorder(
-                                   borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-                                 ),
-                                 builder: (context) => Padding(
-                                   padding: const EdgeInsets.symmetric(vertical: 16),
-                                   child: Column(
-                                     mainAxisSize: MainAxisSize.min,
-                                     children: [
-                                       ListTile(
-                                         leading: const Icon(Icons.help_outline),
-                                         title: const Text("Help & Support"),
-                                         onTap: () {
-                                           Navigator.pop(context);
-                                           Navigator.push(context, MaterialPageRoute(builder: (context) => const HelpSupportScreen()));
-                                         },
-                                       ),
-                                       ListTile(
-                                         leading: const Icon(Icons.info_outline),
-                                         title: const Text("About"),
-                                         onTap: () {
-                                           Navigator.pop(context);
-                                           Navigator.push(context, MaterialPageRoute(builder: (context) => const AboutScreen()));
-                                         },
-                                       ),
-                                     ],
-                                   ),
-                                 ),
-                               );
-                             },
-                             child: _buildQuickAction(context, Icons.more_horiz_rounded, "More"),
-                           ),
-                        ],
+                              onTap: () {
+                                // Show More Menu
+                                showModalBottomSheet(
+                                  context: context,
+                                  backgroundColor: Colors.transparent,
+                                  builder: (context) => Container(
+                                    decoration: BoxDecoration(
+                                      color: Theme.of(context).colorScheme.surface,
+                                      borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+                                    ),
+                                    padding: const EdgeInsets.fromLTRB(24, 8, 24, 40),
+                                    child: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        // Handle bar
+                                        Container(
+                                          margin: const EdgeInsets.only(bottom: 24),
+                                          width: 40,
+                                          height: 4,
+                                          decoration: BoxDecoration(
+                                            color: Colors.grey.withOpacity(0.3),
+                                            borderRadius: BorderRadius.circular(2),
+                                          ),
+                                        ),
+                                        // App Grid
+                                        Wrap(
+                                          spacing: 24,
+                                          runSpacing: 24,
+                                          alignment: WrapAlignment.center,
+                                          children: [
+                                            _buildIOSAppIcon(
+                                              context,
+                                              title: "Calculator",
+                                              icon: Icons.calculate_rounded,
+                                              gradientColors: [const Color(0xFFFF9F0A), const Color(0xFFFFB340)],
+                                              onTap: () {
+                                                Navigator.pop(context);
+                                                Navigator.push(context, MaterialPageRoute(builder: (context) => const CalculatorScreen()));
+                                              },
+                                            ),
+                                            _buildIOSAppIcon(
+                                              context,
+                                              title: "Help",
+                                              icon: Icons.help_outline_rounded,
+                                              gradientColors: [const Color(0xFF0A84FF), const Color(0xFF409CFF)],
+                                              onTap: () {
+                                                Navigator.pop(context);
+                                                Navigator.push(context, MaterialPageRoute(builder: (context) => const HelpSupportScreen()));
+                                              },
+                                            ),
+                                            _buildIOSAppIcon(
+                                              context,
+                                              title: "Export",
+                                              icon: Icons.file_download_outlined,
+                                              gradientColors: [const Color(0xFF5E5CE6), const Color(0xFF7D7AFF)], // iOS Purple/Blue
+                                              onTap: () {
+                                                Navigator.pop(context);
+                                                _exportToPDF(context);
+                                              },
+                                            ),
+                                            _buildIOSAppIcon(
+                                              context,
+                                              title: "About",
+                                              icon: Icons.info_outline_rounded,
+                                              gradientColors: [const Color(0xFF8E8E93), const Color(0xFFAEB0B6)],
+                                              onTap: () {
+                                                Navigator.pop(context);
+                                                Navigator.push(context, MaterialPageRoute(builder: (context) => const AboutScreen()));
+                                              },
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                );
+                              },
+                              child: _buildQuickAction(
+                                context, 
+                                Icons.more_horiz_rounded, 
+                                "More",
+                                [const Color(0xFF545456), const Color(0xFF6C6C70)], // Dark Grey
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
                     
                     const SizedBox(height: 24),
 
@@ -410,7 +479,7 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
                           ),
                           const SizedBox(width: 12),
                           Text(
-                            'Recent Transactions',
+                            'Transactions',
                             style: textTheme.titleLarge?.copyWith(
                               fontWeight: FontWeight.bold,
                               letterSpacing: -0.5,
@@ -555,9 +624,8 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
      );
   }
 
-  Widget _buildQuickAction(BuildContext context, IconData icon, String label) {
+  Widget _buildQuickAction(BuildContext context, IconData icon, String label, List<Color> colors) {
      final colorScheme = Theme.of(context).colorScheme;
-     final isDark = Theme.of(context).brightness == Brightness.dark;
      
      return Column(
        children: [
@@ -565,31 +633,47 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
            height: 60,
            width: 60,
            decoration: BoxDecoration(
-             color: isDark 
-                 ? colorScheme.surfaceContainerHighest
-                 : Colors.white,
-             borderRadius: BorderRadius.circular(20),
+             gradient: LinearGradient(
+               colors: colors,
+               begin: Alignment.topLeft,
+               end: Alignment.bottomRight,
+             ),
+             borderRadius: BorderRadius.circular(18),
              boxShadow: [
                BoxShadow(
-                 color: isDark 
-                     ? Colors.black.withOpacity(0.3)
-                     : Colors.black.withOpacity(0.08), 
-                 blurRadius: 16, 
+                 color: colors[0].withOpacity(0.4),
+                 blurRadius: 10,
                  offset: const Offset(0, 4),
-                 spreadRadius: 0,
                ),
              ],
-             border: Border.all(
-               color: isDark
-                   ? colorScheme.outline.withOpacity(0.2)
-                   : colorScheme.outline.withOpacity(0.1),
-               width: 1,
-             ),
            ),
-           child: Icon(
-             icon, 
-             color: colorScheme.primary,
-             size: 24,
+           child: Stack(
+             children: [
+               // Gloss Shine
+               Positioned(
+                 top: 0, left: 0, right: 0, height: 30,
+                 child: Container(
+                   decoration: BoxDecoration(
+                     gradient: LinearGradient(
+                       colors: [Colors.white.withOpacity(0.3), Colors.white.withOpacity(0.0)],
+                       begin: Alignment.topCenter,
+                       end: Alignment.bottomCenter,
+                     ),
+                     borderRadius: const BorderRadius.vertical(top: Radius.circular(18)),
+                   ),
+                   child: null,
+                 ),
+               ),
+               // Icon
+               Center(
+                 child: Icon(
+                   icon, 
+                   color: Colors.white,
+                   size: 26,
+                   shadows: [Shadow(color: Colors.black.withOpacity(0.2), blurRadius: 4, offset: const Offset(0, 2))],
+                 ),
+               ),
+             ],
            ),
          ),
          const SizedBox(height: 8),
@@ -605,7 +689,84 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
      );
   }
 
-  Widget _buildTransactionTile(Transaction transaction, BuildContext context) {
+    Widget _buildIOSAppIcon(
+    BuildContext context, {
+    required String title,
+    required IconData icon,
+    required List<Color> gradientColors,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            width: 64,
+            height: 64,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: gradientColors,
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              borderRadius: BorderRadius.circular(16), // IOS squircle-like
+              boxShadow: [
+                BoxShadow(
+                  color: gradientColors.first.withOpacity(0.4),
+                  blurRadius: 12,
+                  offset: const Offset(0, 6),
+                ),
+              ],
+            ),
+            child: Stack(
+              children: [
+                // Gloss effect (Top shine)
+                Positioned(
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  height: 32,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [
+                          Colors.white.withOpacity(0.3),
+                          Colors.white.withOpacity(0.0),
+                        ],
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                      ),
+                      borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
+                    ),
+                  ),
+                ),
+                // Icon
+                Center(
+                  child: Icon(
+                    icon,
+                    color: Colors.white,
+                    size: 30,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            title,
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w500,
+              color: Theme.of(context).colorScheme.onSurface,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+Widget _buildTransactionTile(Transaction transaction, BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     final isIncome = transaction.isIncome;
     final amountColor = isIncome ? const Color(0xFF10B981) : const Color(0xFFEF4444);

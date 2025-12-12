@@ -3,7 +3,8 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'providers/transaction_provider.dart';
 import 'providers/theme_provider.dart';
-import 'providers/group_provider.dart'; // Add this line
+import 'providers/group_provider.dart';
+import 'modules/statement_import/providers/statement_provider.dart';
 import 'screens/home_screen.dart';
 import 'screens/pin_lock_screen.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -142,6 +143,7 @@ class ExpenseTrackerApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => GroupProvider()..loadGroups()),
         ChangeNotifierProvider(
             create: (_) => TransactionProvider()..fetchTransactions()),
+        ChangeNotifierProvider(create: (_) => StatementProvider()),
       ],
       child: Consumer<ThemeProvider>(
         builder: (context, themeProvider, child) {

@@ -168,20 +168,22 @@ class _WalletPageState extends State<WalletPage> {
   }
 
   Widget _buildSearchBar() {
+    final colorScheme = Theme.of(context).colorScheme;
     return Padding(
       padding: const EdgeInsets.fromLTRB(12, 12, 12, 0),
       child: CupertinoSearchTextField(
         onChanged: _filterTransactions,
         placeholder: 'Search Transactions...',
-        style: TextStyle(color: CupertinoDynamicColor.resolve(CupertinoColors.label, context)),
-        backgroundColor: CupertinoDynamicColor.resolve(CupertinoColors.systemGrey5, context),
-        prefixIcon: const Icon(CupertinoIcons.search, size: 20),
-        suffixIcon: const Icon(CupertinoIcons.xmark_circle_fill, size: 20),
+        style: TextStyle(color: colorScheme.onSurface),
+        backgroundColor: colorScheme.surfaceContainerHighest.withOpacity(0.5),
+        prefixIcon: Icon(CupertinoIcons.search, size: 20, color: colorScheme.onSurfaceVariant),
+        suffixIcon: Icon(CupertinoIcons.xmark_circle_fill, size: 20, color: colorScheme.onSurfaceVariant),
       ),
     );
   }
 
   Widget _buildFilterAndSortOptions() {
+    final colorScheme = Theme.of(context).colorScheme;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
       child: Row(
@@ -192,7 +194,7 @@ class _WalletPageState extends State<WalletPage> {
               padding: EdgeInsets.zero,
               child: Text(
                 'Filter: $_selectedFilter',
-                style: const TextStyle(fontSize: 14),
+                style: TextStyle(fontSize: 14, color: colorScheme.primary),
               ),
               onPressed: () => _showFilterSheet(context),
             ),
@@ -200,7 +202,7 @@ class _WalletPageState extends State<WalletPage> {
           Container(
             height: 24,
             width: 1,
-            color: CupertinoColors.systemGrey4,
+            color: colorScheme.outline.withOpacity(0.3),
             margin: const EdgeInsets.symmetric(horizontal: 8),
           ),
           Expanded(
@@ -208,7 +210,7 @@ class _WalletPageState extends State<WalletPage> {
               padding: EdgeInsets.zero,
               child: Text(
                 'Sort: $_selectedSort',
-                style: const TextStyle(fontSize: 14),
+                style: TextStyle(fontSize: 14, color: colorScheme.primary),
               ),
               onPressed: () => _showSortSheet(context),
             ),
@@ -216,7 +218,7 @@ class _WalletPageState extends State<WalletPage> {
           CupertinoButton(
             padding: const EdgeInsets.only(left: 8),
             onPressed: _generatePdf,
-            child: const Icon(CupertinoIcons.share, size: 24),
+            child: Icon(CupertinoIcons.share, size: 24, color: colorScheme.primary),
           ),
         ],
       ),
@@ -366,15 +368,19 @@ class _WalletPageState extends State<WalletPage> {
 
   @override
   Widget build(BuildContext context) {
-    final isDarkMode = MediaQuery.of(context).platformBrightness == Brightness.dark;
-    final backgroundColor = isDarkMode ? CupertinoColors.black : CupertinoColors.systemGroupedBackground;
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final isDark = theme.brightness == Brightness.dark;
+    
+    // Use theme colors instead of hardcoded Cupertino ones
+    final backgroundColor = theme.scaffoldBackgroundColor;
 
     return CupertinoPageScaffold(
       backgroundColor: backgroundColor,
-      navigationBar: const CupertinoNavigationBar(
-        middle: Text("Wallet"),
-        backgroundColor: CupertinoColors.systemBackground,
-        border: null,
+      navigationBar: CupertinoNavigationBar(
+        middle: Text("Wallet", style: TextStyle(color: colorScheme.onSurface)),
+        backgroundColor: colorScheme.surface,
+        border: Border(bottom: BorderSide(color: colorScheme.outline.withOpacity(0.1))),
       ),
       child: SafeArea(
         child: Column(
@@ -384,13 +390,20 @@ class _WalletPageState extends State<WalletPage> {
             const SizedBox(height: 8),
             CupertinoSlidingSegmentedControl<String>(
               groupValue: _selectedGroup,
-              thumbColor: CupertinoDynamicColor.resolve(CupertinoColors.systemGrey5, context),
+              thumbColor: colorScheme.primary.withOpacity(0.2),
+              backgroundColor: colorScheme.surfaceContainerHighest,
               children: _groupingOptions.keys.map((key) {
                 return MapEntry(
                   key,
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                    child: Text(key),
+                    child: Text(
+                      key,
+                      style: TextStyle(
+                        color: _selectedGroup == key ? colorScheme.primary : colorScheme.onSurface,
+                        fontWeight: _selectedGroup == key ? FontWeight.bold : FontWeight.normal
+                      )
+                    ),
                   ),
                 );
               }).cast<MapEntry<String, Widget>>()
@@ -411,10 +424,11 @@ class _WalletPageState extends State<WalletPage> {
             Expanded(
               child: RefreshIndicator(
                 key: _refreshIndicatorKey,
-                color: CupertinoDynamicColor.resolve(CupertinoColors.activeBlue, context),
+                color: colorScheme.primary,
+                backgroundColor: colorScheme.surface,
                 onRefresh: _loadTransactions,
                 child: _isLoading
-                    ? const Center(child: CupertinoActivityIndicator())
+                    ? Center(child: CupertinoActivityIndicator(color: colorScheme.onSurface))
                     : _buildTransactionList(),
               ),
             ),
@@ -440,12 +454,16 @@ class CupertinoListTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
-    final cardColor = isDarkMode ? const Color(0xFF2C2C2E) : Colors.white;
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
 
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 0),
       padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+          color: colorScheme.surface,
+          border: Border(bottom: BorderSide(color: colorScheme.outline.withOpacity(0.1)))
+      ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -457,7 +475,7 @@ class CupertinoListTile extends StatelessWidget {
                   style: TextStyle(
                     fontWeight: FontWeight.w600,
                     fontSize: 16,
-                    color: isDarkMode ? Colors.white : CupertinoColors.label,
+                    color: colorScheme.onSurface,
                   ),
                   child: title,
                 ),
@@ -465,7 +483,7 @@ class CupertinoListTile extends StatelessWidget {
                   const SizedBox(height: 4),
                   DefaultTextStyle(
                     style: TextStyle(
-                      color: isDarkMode ? CupertinoColors.systemGrey2 : CupertinoColors.systemGrey,
+                      color: colorScheme.onSurfaceVariant,
                       fontSize: 12,
                     ),
                     child: subtitle!,

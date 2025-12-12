@@ -14,7 +14,7 @@ if (keystorePropertiesFile.exists()) {
 
 android {
     namespace "com.ek.financetrackerpro"
-    compileSdk 34 // Flutter SDK ke hisaab se latest version set karein
+    compileSdk 36 // Flutter SDK ke hisaab se latest version set karein
     ndkVersion "25.1.8937393" // Flutter ndk version check karein
 
     compileOptions {
@@ -29,7 +29,7 @@ android {
     defaultConfig {
         applicationId "com.ek.financetrackerpro"
         minSdkVersion flutter.minSdkVersion // Flutter projects ke liye ye recommended hai
-        targetSdkVersion 34
+        targetSdkVersion 36
         versionCode 1
         versionName "1.0.0"
     }
