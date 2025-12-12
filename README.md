@@ -10,6 +10,8 @@
   [![Dart](https://img.shields.io/badge/Dart-3.2.0-0175C2?style=for-the-badge&logo=dart&logoColor=white)](https://dart.dev/)
   [![Platform](https://img.shields.io/badge/Android-Indus_App_Store-A4C639?style=for-the-badge&logo=android&logoColor=white)](https://www.indusappstore.com/)
   [![License](https://img.shields.io/badge/license-MIT-green?style=for-the-badge)](LICENSE)
+  [![Download APK](https://img.shields.io/badge/Download-APK-FF0000?style=for-the-badge&logo=android&logoColor=white)](releases/FinanceTracker.apk)
+
 
   <h3>Take Control of Your Money with Style 💰</h3>
   
@@ -107,7 +109,10 @@ This project is built with love and code using:
 
 ## 📦 Installation
 
-Get the project running on your local machine:
+🚀 **Want to try it out instantly?**  
+👉 [**Download Latest APK**](releases/FinanceTracker.apk)
+
+Or get the project running on your local machine:
 
 1.  **Clone the Repo**
     ```bash
