@@ -8,8 +8,8 @@ import '../file_parser_factory.dart';
 class PdfParser implements FileParser {
   @override
   Future<List<ImportedTransaction>> parse(File file) async {
-    // Run the heavy parsing logic in a separate isolate to avoid UI freeze
-    return await compute(parsePdfWorker, file.path);
+    // Run parsing logic directly on main thread (Reverted optimization)
+    return await parsePdfWorker(file.path);
   }
 }
 

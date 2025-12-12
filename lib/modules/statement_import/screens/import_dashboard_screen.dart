@@ -117,6 +117,10 @@ class _ImportDashboardScreenState extends State<ImportDashboardScreen> {
         iconTheme: IconThemeData(color: colorScheme.onSurface),
         actions: [
           IconButton(
+            icon: const Icon(Icons.filter_list_rounded),
+            onPressed: () => _showFilterSheet(context),
+          ),
+          IconButton(
              icon: const Icon(Icons.more_vert_rounded),
              onPressed: () => _showMoreMenu(context),
           )
@@ -128,15 +132,17 @@ class _ImportDashboardScreenState extends State<ImportDashboardScreen> {
             return Center(child: CircularProgressIndicator(color: colorScheme.primary));
           }
 
-          if (provider.transactions.isEmpty) {
-             return _buildEmptyState(context, colorScheme);
-          }
+          // if (provider.transactions.isEmpty) {
+          //    return _buildEmptyState(context, colorScheme);
+          // }
 
           // Calculate Summaries
           final totalIncome = provider.transactions.where((t) => t.type == 'CREDIT').fold(0.0, (sum, t) => sum + t.amount);
           final totalExpense = provider.transactions.where((t) => t.type == 'DEBIT').fold(0.0, (sum, t) => sum + t.amount);
           final balance = totalIncome - totalExpense;
 
+          // Calculate Summaries ensure no zero division issues if needed (though 0/0 is handled in UI usually by staying 0)
+          
           return CustomScrollView(
             physics: const BouncingScrollPhysics(),
             slivers: [
@@ -219,6 +225,15 @@ class _ImportDashboardScreenState extends State<ImportDashboardScreen> {
                                 Icons.delete_outline_rounded, 
                                 "Clear All",
                                 [const Color(0xFFFF3B30), const Color(0xFFFF6961)], // Red
+                              ),
+                            ),
+                            GestureDetector(
+                              onTap: () => _showFilterSheet(context),
+                              child: _buildQuickAction(
+                                context, 
+                                Icons.filter_list_rounded, 
+                                "Filter",
+                                [const Color(0xFF9C27B0), const Color(0xFFBA68C8)], // Purple
                               ),
                             ),
                          ],
@@ -341,14 +356,13 @@ class _ImportDashboardScreenState extends State<ImportDashboardScreen> {
         },
       ),
       floatingActionButton: Consumer<StatementProvider>(
-          builder: (context, provider, _) => provider.transactions.isNotEmpty 
-          ? FloatingActionButton.extended(
+          builder: (context, provider, _) => FloatingActionButton.extended(
             onPressed: () => provider.importFile(),
             icon: const Icon(Icons.add_rounded),
             label: const Text("Import"),
             backgroundColor: colorScheme.primary,
             foregroundColor: Colors.white,
-          ) : const SizedBox.shrink()
+          )
       ),
     );
   }
@@ -1067,10 +1081,10 @@ class _ImportDashboardScreenState extends State<ImportDashboardScreen> {
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
-      builder: (context) => Container(
+      builder: (sheetContext) => Container(
         padding: const EdgeInsets.all(24),
         decoration: BoxDecoration(
-          color: Theme.of(context).scaffoldBackgroundColor,
+          color: Theme.of(sheetContext).scaffoldBackgroundColor,
           borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
         ),
         child: Column(
@@ -1079,40 +1093,40 @@ class _ImportDashboardScreenState extends State<ImportDashboardScreen> {
           children: [
             Text(
               "Select Statement Source",
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+              style: Theme.of(sheetContext).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 24),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
                 _buildSourceOption(
-                  context, 
+                  sheetContext, 
                   "PhonePe", 
                   Icons.account_balance_wallet_rounded, 
                   const Color(0xFF673AB7), // Purple
                   () {
-                    Navigator.pop(context);
-                    _handleImport(context);
+                    Navigator.pop(sheetContext);
+                    _handleImport(context); // Use stable outer context
                   }
                 ),
                 _buildSourceOption(
-                  context, 
+                  sheetContext, 
                   "MobiKwik", 
                   Icons.flash_on_rounded, 
                   const Color(0xFF0091EA), // Blue
                   () {
-                    Navigator.pop(context);
-                    _handleImport(context);
+                    Navigator.pop(sheetContext);
+                    _handleImport(context); // Use stable outer context
                   }
                 ),
                 _buildSourceOption(
-                  context, 
+                  sheetContext, 
                   "Other", 
                   Icons.receipt_long_rounded, 
                   const Color(0xFF757575), // Grey
                   () {
-                    Navigator.pop(context);
-                    _handleImport(context);
+                    Navigator.pop(sheetContext);
+                    _handleImport(context); // Use stable outer context
                   }
                 ),
               ],
