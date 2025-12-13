@@ -2,24 +2,35 @@
 
 <div align="center">
 
-  <img src="assets/icon/app_icon.png" alt="Finance Tracker PRO Logo" width="140" height="140" style="border-radius: 20px; box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);" />
+  <img src="assets/icon/app_icon.png" alt="Finance Tracker PRO Logo" width="160" height="160" style="border-radius: 24px; box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.15); transition: transform 0.3s ease-in-out;" />
 
   <br><br>
 
-  [![Flutter](https://img.shields.io/badge/Flutter-3.6.1-02569B?style=for-the-badge&logo=flutter&logoColor=white)](https://flutter.dev/)
-  [![Dart](https://img.shields.io/badge/Dart-3.2.0-0175C2?style=for-the-badge&logo=dart&logoColor=white)](https://dart.dev/)
-  [![Platform](https://img.shields.io/badge/Android-Indus_App_Store-A4C639?style=for-the-badge&logo=android&logoColor=white)](https://www.indusappstore.com/)
-  [![License](https://img.shields.io/badge/license-MIT-green?style=for-the-badge)](LICENSE)
-  [![Download APK](https://img.shields.io/badge/Download-APK-FF0000?style=for-the-badge&logo=android&logoColor=white)](releases/FinanceTracker.apk)
+  <h1>Personal Finance, Reimagined.</h1>
 
-
-  <h3>Take Control of Your Money with Style 💰</h3>
-  
-  <p>
+  <p style="font-size: 1.1em; max-width: 600px;">
     <b>Track Expenses</b> • <b>Split Bills</b> • <b>Visual Analytics</b> • <b>Offline First</b>
   </p>
 
-  [Report Bug](https://github.com/abhishek0112cs221008/Finance-Tracker/issues) • [Request Feature](https://github.com/abhishek0112cs221008/Finance-Tracker/issues)
+  <br>
+
+  [![Flutter](https://img.shields.io/badge/Flutter-3.24.0-02569B?style=for-the-badge&logo=flutter&logoColor=white)](https://flutter.dev/)
+  [![Dart](https://img.shields.io/badge/Dart-3.5.0-0175C2?style=for-the-badge&logo=dart&logoColor=white)](https://dart.dev/)
+  [![License](https://img.shields.io/badge/License-MIT-45f?style=for-the-badge)](LICENSE)
+  <br>
+  [![Platform](https://img.shields.io/badge/Android-In_Production-A4C639?style=for-the-badge&logo=android&logoColor=white)](https://www.indusappstore.com/)
+  [![Download APK](https://img.shields.io/badge/Download-APK-FF0000?style=for-the-badge&logo=google-play&logoColor=white)](releases/FinanceTracker.apk)
+  [![Download on Indus App Store](https://img.shields.io/badge/Indus_App_Store-Download-FF6600?style=for-the-badge&logo=google-play&logoColor=white)](INSERT_INDUS_APP_STORE_LINK_HERE)
+
+  <br><br>
+
+  <a href="https://github.com/abhishek0112cs221008/Finance-Tracker/issues">
+    <img src="https://img.shields.io/badge/Report_Bug-D9534F?style=flat-square&logo=github&logoColor=white" alt="Report Bug" />
+  </a>
+  <a href="https://github.com/abhishek0112cs221008/Finance-Tracker/issues">
+    <img src="https://img.shields.io/badge/Request_Feature-5BC0DE?style=flat-square&logo=github&logoColor=white" alt="Request Feature" />
+  </a>
+
 </div>
 
 ---
@@ -48,47 +59,56 @@ Designed with the latest **Material Design 3** principles, it offers a seamless,
 ## ✨ Key Features
 
 ### 📊 **Smart Financial Tracking**
-> Log it, tag it, forget it.
-- **Fast Logging:** Add transactions in seconds.
-- **Custom Categories:** Personalized icons and colors.
-- **Recurring Transactions:** Automate your bills and salaries.
+> *Log it, tag it, forget it.*
+- ✅ **Fast Logging:** Add transactions in seconds with intuitive inputs.
+- 🏷️ **Custom Categories:** Personalize your spending with icons and colors.
+- 🔄 **Recurring Transactions:** Set it and forget it for bills & salaries.
 
 ### 📈 **Powerful Analytics**
-> See where your money goes.
-- **Interactive Charts:** Beautiful Pie and Bar charts powered by `fl_chart`.
-- **Monthly Reports:** Deep dive into spending habits.
-- **Trend Analysis:** Visualize your financial growth.
+> *See where your money goes.*
+- 🎨 **Interactive Charts:** Beautiful Pie and Bar charts powered by `fl_chart`.
+- 📅 **Monthly Reports:** Deep dive into spending habits by category or time.
+- 🚀 **Trend Analysis:** Visualize your financial growth over time.
 
 ### 👥 **Group Expenses & Trip Splitting**
-> No more "Who owes who?"
-- **Split Bills:** Perfect for roommates, trips, and dinners.
-- **Simplify Debts:** Smart algorithm to minimize transactions.
-- **Multiple Groups:** Manage different friend circles easily.
+> *No more "Who owes who?"*
+- 💸 **Split Bills:** Perfect for roommates, trips, and dinners.
+- 🧮 **Simplify Debts:** Smart algorithm to minimize the number of transactions.
+- ✈️ **Multiple Groups:** Manage different friend circles effortlessly.
 
 ### 🎨 **Premium Experience**
-> Finance, but make it beautiful.
-- **8+ Themes:** Curated color palettes (Deep Teal, Green, etc.).
-- **Dark Mode:** True OLED black support.
-- **Edge-to-Edge UI:** Modern, immersive design.
+> *Finance, but make it beautiful.*
+- 🎭 **8+ Themes:** Curated color palettes (Deep Teal, Midnight Green, etc.).
+- 🌙 **Dark Mode:** True OLED black support for battery saving.
+- 📱 **Edge-to-Edge UI:** Modern, immersive Material 3 design.
 
 ### 🔒 **Security & Tools**
-- **PIN Lock:** Secure 4-digit protection.
-- **PDF Export:** Professional reports for sharing.
-- **Local Storage:** 100% Offline SQLite database.
-- **₹ Rupee Support:** Native currency handling.
+- 🛡️ **PIN Lock:** Secure your data with 4-digit protection.
+- 📄 **PDF Export:** Generate professional reports for sharing/printing.
+- 💾 **Local Storage:** 100% Offline SQLite database. Your data, your rules.
+- ₹ **Rupee Support:** Native currency handling designed for Indian users.
 
 ---
 
 ## 📱 Screenshots
 
 <div align="center">
-  <img src="https://via.placeholder.com/200x400?text=Home+Screen" alt="Home" width="200"/>
-  <img src="https://via.placeholder.com/200x400?text=Analytics" alt="Analytics" width="200"/>
-  <img src="https://via.placeholder.com/200x400?text=Groups" alt="Groups" width="200"/>
-  <img src="https://via.placeholder.com/200x400?text=Dark+Mode" alt="Dark Mode" width="200"/>
+  <img src="assets/output/file_000000000624720ea2be55ea97cc4192.png" alt="Dashboard" width="200"/>
+  <img src="assets/output/file_00000000072072069ff7d38b1455b999.png" alt="Analytics" width="200"/>
+  <img src="assets/output/file_000000004008722f93074995534500e6%20(1).png" alt="Transactions" width="200"/>
 </div>
-
-*(Replace placeholders with actual screenshots)*
+<br>
+<div align="center">
+  <img src="assets/output/file_000000006d8472098f2b0cc67f1f87a5.png" alt="Import" width="200"/>
+  <img src="assets/output/file_000000008abc7208a61103cf8ce33214.png" alt="Menu" width="200"/>
+  <img src="assets/output/file_00000000a7dc7207afc85f93d8d4269d.png" alt="Settings" width="200"/>
+</div>
+<br>
+<div align="center">
+  <img src="assets/output/file_00000000c78c7243bd7d0e756b3c8d3e.png" alt="Profile" width="200"/>
+  <img src="assets/output/file_00000000f80871f68eca8550b2b1035f.png" alt="Reports" width="200"/>
+  <img src="assets/output/file_00000000fc4471fab64b08e566f43085.png" alt="Details" width="200"/>
+</div>
 
 ---
 
@@ -98,12 +118,12 @@ This project is built with love and code using:
 
 | Category | Technology |
 |----------|------------|
-| **Framework** | ![Flutter](https://img.shields.io/badge/Flutter-02569B?style=flat-square&logo=flutter&logoColor=white) |
-| **Language** | ![Dart](https://img.shields.io/badge/Dart-0175C2?style=flat-square&logo=dart&logoColor=white) |
-| **State Management** | **Provider** (Efficient & Scalable) |
-| **Database** | **SQLite** (sqflite) |
-| **Visualization** | **FL Chart** |
-| **PDF Generation** | **Printing & PDF** |
+| **Framework** | ![Flutter](https://img.shields.io/badge/Flutter-02569B?style=for-the-badge&logo=flutter&logoColor=white) |
+| **Language** | ![Dart](https://img.shields.io/badge/Dart-0175C2?style=for-the-badge&logo=dart&logoColor=white) |
+| **State Management** | **Provider** (Simple, Efficient, Scalable) |
+| **Database** | **SQLite** (`sqflite`) - Robust offline storage |
+| **Visualization** | **FL Chart** - High-performance chart rendering |
+| **PDF Generation** | **Printing & PDF** - Document creation |
 
 ---
 
@@ -167,6 +187,18 @@ Contributions are what make the open source community such an amazing place to l
 
 <div align="center">
   <br>
-  Built with ❤️ by <a href="https://github.com/abhishek0112cs221008">Abhishek</a>
-  <br><br>
+  
+  <h3>Developed with ❤️ by <a href="https://github.com/abhishek0112cs221008">Abhishek</a></h3>
+  
+  <p>
+    <a href="https://github.com/abhishek0112cs221008">
+      <img src="https://img.shields.io/badge/GitHub-Profile-181717?style=social&logo=github" alt="GitHub" />
+    </a>
+    &nbsp;&nbsp;
+    <a href="mailto:abhishek@example.com">
+      <img src="https://img.shields.io/badge/Email-Contact_Me-D14836?style=social&logo=gmail" alt="Email" />
+    </a>
+  </p>
+
+  <br>
 </div>
