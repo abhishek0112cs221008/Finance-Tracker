@@ -5,12 +5,17 @@ import '../models/transaction.dart';
 import 'package:intl/intl.dart';
 
 class PdfExport {
-  static Future<void> exportTransactionsToPdf(List<Transaction> transactions) async {
+  static Future<void> exportTransactionsToPdf(
+      List<Transaction> transactions) async {
     final pdf = pw.Document();
-    
+
     // Calculate totals
-    final totalIncome = transactions.where((t) => t.isIncome).fold(0.0, (sum, t) => sum + t.amount);
-    final totalExpenses = transactions.where((t) => !t.isIncome).fold(0.0, (sum, t) => sum + t.amount);
+    final totalIncome = transactions
+        .where((t) => t.isIncome)
+        .fold(0.0, (sum, t) => sum + t.amount);
+    final totalExpenses = transactions
+        .where((t) => !t.isIncome)
+        .fold(0.0, (sum, t) => sum + t.amount);
     final balance = totalIncome - totalExpenses;
 
     pdf.addPage(
@@ -96,21 +101,26 @@ class PdfExport {
                 ),
               ],
             ),
-            
+
             pw.SizedBox(height: 20),
-            
+
             // Summary Cards
             pw.Row(
               mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
               children: [
-                _buildSummaryCard('Total Income', 'Rs. ${totalIncome.toStringAsFixed(2)}', PdfColors.green),
-                _buildSummaryCard('Total Expenses', 'Rs. ${totalExpenses.toStringAsFixed(2)}', PdfColors.red),
-                _buildSummaryCard('Balance', 'Rs. ${balance.toStringAsFixed(2)}', PdfColor.fromHex('#10B981')),
+                _buildSummaryCard('Total Income',
+                    'Rs. ${totalIncome.toStringAsFixed(2)}', PdfColors.green),
+                _buildSummaryCard('Total Expenses',
+                    'Rs. ${totalExpenses.toStringAsFixed(2)}', PdfColors.red),
+                _buildSummaryCard(
+                    'Balance',
+                    'Rs. ${balance.toStringAsFixed(2)}',
+                    PdfColor.fromHex('#10B981')),
               ],
             ),
-            
+
             pw.SizedBox(height: 30),
-            
+
             // Transactions Table
             pw.Text(
               'Transaction Details',
@@ -120,7 +130,7 @@ class PdfExport {
               ),
             ),
             pw.SizedBox(height: 10),
-            
+
             pw.Table(
               border: pw.TableBorder.all(color: PdfColors.grey300),
               children: [
@@ -141,25 +151,30 @@ class PdfExport {
                 ...transactions.map((transaction) {
                   return pw.TableRow(
                     children: [
-                      _buildTableCell(DateFormat('MMM dd').format(transaction.date)),
+                      _buildTableCell(
+                          DateFormat('MMM dd').format(transaction.date)),
                       _buildTableCell(transaction.name),
                       _buildTableCell(transaction.category),
                       _buildTableCell(
                         transaction.isIncome ? 'Income' : 'Expense',
-                        color: transaction.isIncome ? PdfColors.green : PdfColors.red,
+                        color: transaction.isIncome
+                            ? PdfColors.green
+                            : PdfColors.red,
                       ),
                       _buildTableCell(
                         'Rs. ${transaction.amount.toStringAsFixed(2)}',
-                        color: transaction.isIncome ? PdfColors.green : PdfColors.red,
+                        color: transaction.isIncome
+                            ? PdfColors.green
+                            : PdfColors.red,
                       ),
                     ],
                   );
                 }).toList(),
               ],
             ),
-            
+
             pw.SizedBox(height: 30),
-            
+
             // Footer watermark
             pw.Center(
               child: pw.Opacity(
@@ -184,7 +199,8 @@ class PdfExport {
     );
   }
 
-  static pw.Widget _buildSummaryCard(String title, String value, PdfColor color) {
+  static pw.Widget _buildSummaryCard(
+      String title, String value, PdfColor color) {
     return pw.Container(
       width: 160,
       padding: const pw.EdgeInsets.all(12),
@@ -216,7 +232,8 @@ class PdfExport {
     );
   }
 
-  static pw.Widget _buildTableCell(String text, {bool isHeader = false, PdfColor? color}) {
+  static pw.Widget _buildTableCell(String text,
+      {bool isHeader = false, PdfColor? color}) {
     return pw.Padding(
       padding: const pw.EdgeInsets.all(8),
       child: pw.Text(
