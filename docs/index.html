@@ -38,6 +38,10 @@
             line-height: 1.5;
             -webkit-font-smoothing: antialiased;
             overflow-x: hidden;
+            background-image:
+                radial-gradient(circle at 15% 50%, rgba(0, 122, 255, 0.15) 0%, transparent 25%),
+                radial-gradient(circle at 85% 30%, rgba(255, 0, 150, 0.15) 0%, transparent 25%);
+            background-attachment: fixed;
         }
 
         header {
@@ -337,24 +341,6 @@
             </div>
         </div>
     </footer>
-
-    rootMargin: "0px 0px -50px 0px"
-    };
-
-    const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-    if (entry.isIntersecting) {
-    entry.target.classList.add('fade-up-enter');
-    observer.unobserve(entry.target); // Only animate once
-    }
-    });
-    }, observerOptions);
-
-    document.querySelectorAll('.scroll-reveal').forEach((el) => {
-    observer.observe(el);
-    });
-    </script>
-
 </body>
 
 </html>
